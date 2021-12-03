@@ -1,6 +1,6 @@
 return {
-	MajorVersion = 1;
-	MinorVersion = 0;
-	PatchVersion = 0;
+	MajorVersion = 0;
+	MinorVersion = 3;
+	PatchVersion = 12;
 	Branch = 'unauth'
 }
