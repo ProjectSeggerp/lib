@@ -146,7 +146,7 @@ do
 	function utility:KeyPressed() -- yield until next key is pressed
 		local key = input.InputBegan:Wait()
 		
-		while key.UserInputType ~= Enum.UserInputType.Keyboard	 do
+		while key.UserInputType ~= Enum.UserInputType.Keyboard do
 			key = input.InputBegan:Wait()
 		end
 		
