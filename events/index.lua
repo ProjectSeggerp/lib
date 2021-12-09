@@ -6,7 +6,7 @@ function table_clone(t)
 	return t2
   end
 local EventFunction = {event = nil,handler = nil}
-function EventFunction:new(event, handler) 
+function EventFunction:new(event, handler)
 	local new = table_clone(EventFunction)
 	new.event = event
 	new.handler = handler
@@ -22,14 +22,14 @@ EventEmitter.on = function(...)
 	local tmp = EventFunction:new(args[1],args[2])
 	table.insert(EventEmitter.__events, tmp)
 end;
-EventEmitter.emit = function(...) 
+EventEmitter.emit = function(...)
 	local args = {...}
 	assert(#args >= 1, 'event to fire missing')
 
 	local event = args[1]
 	table.remove(args, 1)
-	for _,ev in pairs(EventEmitter.__events) do 
-		if ev.event == event then 
+	for _,ev in pairs(EventEmitter.__events) do
+		if ev.event == event then
 			print(pcall(ev.handler, unpack(args)))
 		end
 	end
