@@ -142,7 +142,7 @@ function Controller:UpdateOperation()
 			Box = Draw'Quad';
 			Tracer = Draw'Line';
 		]]
-		local Player = Controller.LinkedPlayer
+		local Player = DrawingObjects.LinkedPlayer
 		local Character = Player.Character
 
 		if Character == nil then
