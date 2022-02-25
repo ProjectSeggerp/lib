@@ -10,14 +10,15 @@ local func_container = {
 		end
 	end;
 	tween = function(part, target, distPerTick)
+		local CompletedEvent = Instance.new('BindableEvent')
 		local Returns = {
-			Completed = Instance.new('BindableEvent').Event
+			Completed = CompletedEvent.Event
 		}
 		local co = coroutine.create(function()
 			while Wait(Heartbeat) and (part.CFrame.Position - target.CFrame.Position).Magnitude < 1 do
 				part.CFrame = CFrame.lookAt(target.CFrame:Lerp(part.CFrame, distPerTick).Position, target.CFrame.Position)
 			end
-			Returns.Completed:Fire()
+			CompletedEvent:Fire()
 		end)
 		coroutine.resume(co)
 		return Returns
@@ -34,7 +35,7 @@ function metatable.__namecall(self, ...)
 		return error(string.format('this object has no field named %s', getnamecallmethod()), 2)
 	end
 end
-metatable.__type = 'libtween'
+metatable.__metatable = 'Loumec lua inept'
 
 
 return setmetatable(libtween, metatable)

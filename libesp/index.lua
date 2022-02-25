@@ -1,0 +1,23 @@
+local HttpService = game:GetService'HttpService'
+local RunService = game:GetService'RunService'
+local workspace = workspace
+local InstanceIdentifier = HttpService:GenerateGUID(false)
+
+local Library = {
+	Controllers = {}
+}
+
+local function UpdateGlobal()
+	for _, Controller in next, Library.Controllers do
+		if Controller.Enabled then
+			local Success, Error = pcall(Controller.UpdateOperation, Controller)
+			if Success == false then
+				warn('[' .. Controller .. ']', Error)
+			end
+		end
+	end
+end
+
+RunService:BindToRenderStep(InstanceIdentifier, UpdateGlobal)
+
+return Library
