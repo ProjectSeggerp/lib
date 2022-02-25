@@ -4,7 +4,8 @@ local workspace = workspace
 local InstanceIdentifier = HttpService:GenerateGUID(false)
 
 local Library = {
-	Controllers = {}
+	Controllers = {};
+	Enabled = true;
 }
 
 local function UpdateGlobal()
@@ -18,6 +19,6 @@ local function UpdateGlobal()
 	end
 end
 
-RunService:BindToRenderStep(InstanceIdentifier, UpdateGlobal)
+RunService:BindToRenderStep(InstanceIdentifier, Enum.RenderPriority.Camera.Value, UpdateGlobal)
 
 return Library
