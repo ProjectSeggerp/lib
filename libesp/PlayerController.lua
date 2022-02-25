@@ -1,4 +1,5 @@
-local workspace, Draw, format, clamp, floor, Vector2 = workspace, Drawing.new, string.format, math.clamp, math.floor, Vector2
+local workspace, Draw, format, clamp, Vector2 = workspace, Drawing.new, string.format, math.clamp, Vector2
+local floor = math.floor
 
 local spawn, foreach = task.spawn, table.foreach
 
@@ -164,7 +165,7 @@ function Controller:UpdateOperation()
 											DrawingObjects.Box,
 											DrawingObjects.Tracer;
 
-				local Distance = floor(DistanceFromCharacter(LocalPlayer, HumanoidRootPart.Position))
+				local Distance = math.floor(DistanceFromCharacter(LocalPlayer, HumanoidRootPart.Position))
 
 				local Text = (ShowDistance and ('[' .. Distance .. '] ') or '') .. PlayerName .. ((DisplayHealth and MaxHealth == 100) and format(' [%.2f%%]', (Health / MaxHealth) * 100) or '')
 				local Color = Colors[PlayerName]
