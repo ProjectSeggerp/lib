@@ -1,4 +1,4 @@
-local workspace, Draw, format, clamp, floor, Vector2 = workspace, Drawing.new, string.format, math.clamp, floor, Vector2
+local workspace, Draw, format, clamp, floor, Vector2 = workspace, Drawing.new, string.format, math.clamp, math.floor, Vector2
 
 local spawn, foreach = task.spawn, table.foreach
 
