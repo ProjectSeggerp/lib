@@ -101,11 +101,12 @@ local function PlayerAdded(Player)
 		local Character = Player.Character or Player.CharacterAdded:Wait()
 		local PlayerTeam = Character:WaitForChild('PlayerTeam', 10)
 		local Color
-		if table.find(PlayerTeam.Value, GovernmentTeams) then
+		if table.find(GovernmentTeams, PlayerTeam.Value) then
 			Color = ColorsMap.Government
 		else
 			Color = ResolveStatus(Value)
 		end
+		Colors[tostring(Player)] = Color
 	end)
 end
 
@@ -165,7 +166,7 @@ function Controller:UpdateOperation()
 											DrawingObjects.Box,
 											DrawingObjects.Tracer;
 
-				local Distance = math.floor(DistanceFromCharacter(LocalPlayer, HumanoidRootPart.Position))
+				local Distance = floor(DistanceFromCharacter(LocalPlayer, HumanoidRootPart.Position))
 
 				local Text = (ShowDistance and ('[' .. Distance .. '] ') or '') .. PlayerName .. ((DisplayHealth and MaxHealth == 100) and format(' [%.2f%%]', (Health / MaxHealth) * 100) or '')
 				local Color = Colors[PlayerName]
