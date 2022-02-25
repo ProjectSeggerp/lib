@@ -89,6 +89,8 @@ local function PlayerAdded(Player)
 
 	Controller.Objects[tostring(Player)] = Object
 
+	Colors[tostring(Player)] = ColorsMap.Innocent
+
 	local WantedStatus = Player:WaitForChild'WantedStatus':WaitForChild'WantedStatus'
 
 	WantedStatus:GetPropertyChangedSignal'Value':Connect(function(Value)
@@ -101,8 +103,6 @@ local function PlayerAdded(Player)
 			Color = ResolveStatus(Value)
 		end
 	end)
-
-	Colors[tostring(Player)] = ColorsMap.Innocent
 end
 
 local function PlayerRemoving(Player)
@@ -164,10 +164,10 @@ function Controller:UpdateOperation()
 				local Distance = DistanceFromCharacter(LocalPlayer, HumanoidRootPart.Position)
 
 				local Text = (ShowDistance and ('[' .. Distance .. '] ') or '') .. PlayerName .. ((DisplayHealth and MaxHealth == 100) and format(' [%.2f%%]', (Health / MaxHealth) * 100) or '')
-				local Color = Color3.new(1, 1)--Colors[PlayerName]
+				local Color = Colors[PlayerName]
 
 				Name.Text = Text
-				--Name.Color = Color
+				Name.Color = Color
 				Name.Size = clamp(18 - Distance, 18, 86)
 				Name.Position = Vector2.new(
 					WorldToViewportPoint(
@@ -180,7 +180,7 @@ function Controller:UpdateOperation()
 				Name.Visible = true
 
 				if Boxes then
-					--Box.Color = Color
+					Box.Color = Color
 					Box.Visible = true
 
 					local CoordinateFrame = HumanoidRootPart.CFrame
@@ -228,7 +228,7 @@ function Controller:UpdateOperation()
 
 				if Tracers then
 					Tracer.Visible = true
-					--Tracer.Color = Color
+					Tracer.Color = Color
 					Tracer.To = Vector2.new(ScreenPosition.X, ScreenPosition.Y)
 				else
 					Tracer.Visible = false
