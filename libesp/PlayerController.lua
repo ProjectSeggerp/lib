@@ -164,7 +164,7 @@ function Controller:UpdateOperation()
 				local Distance = DistanceFromCharacter(LocalPlayer, HumanoidRootPart.Position)
 
 				local Text = (ShowDistance and ('[' .. Distance .. '] ') or '') .. PlayerName .. ((DisplayHealth and MaxHealth == 100) and format(' [%.2f%%]', (Health / MaxHealth) * 100) or '')
-				local Color = Colors[PlayerName]
+				local Color = Color3.new(1, 1)--Colors[PlayerName]
 
 				Name.Text = Text
 				Name.Color = Color
