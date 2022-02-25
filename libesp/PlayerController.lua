@@ -59,6 +59,9 @@ local function ResolveStatus(Value)
 end
 
 local function PlayerAdded(Player)
+
+	if Player == LocalPlayer then return end
+
 	local Object = {
 		Name = Draw'Text';
 		Box = Draw'Quad';
