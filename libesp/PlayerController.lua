@@ -268,7 +268,6 @@ return table.freeze(
 					return rawset(...)
 				end
 			end;
-			__metatable = true
 		}
 	)
 )
