@@ -13,7 +13,7 @@ local function UpdateGlobal()
 		if Controller.Enabled then
 			local Success, Error = pcall(Controller.UpdateOperation, Controller)
 			if Success == false then
-				warn('[' .. Controller .. ']', Error)
+				warn('[' .. tostring(Controller) .. ']', Error)
 			end
 		end
 	end

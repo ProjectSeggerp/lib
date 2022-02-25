@@ -267,5 +267,6 @@ return setmetatable(
 				return rawset(...)
 			end
 		end;
+		__tostring = 'PlayerController';
 	}
 )
