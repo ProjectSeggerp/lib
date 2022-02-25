@@ -248,26 +248,24 @@ function Controller:UpdateOperation()
 	end
 end
 
-return table.freeze(
-	setmetatable(
-		Controller,
-		{
-			__newindex = function(...)
-				local self, idx, val = ...
-				if idx == 'Enabled' then
-					if val == false then
-						rawset(...)
-						RunService.RenderStepped:Wait()
-						foreach(Controller.Objects, function(_, Objects)
-							foreach(Objects, function(_, Object)
-								Object.Visible = false
-							end)
+return setmetatable(
+	Controller,
+	{
+		__newindex = function(...)
+			local self, idx, val = ...
+			if idx == 'Enabled' then
+				if val == false then
+					rawset(...)
+					RunService.RenderStepped:Wait()
+					foreach(Controller.Objects, function(_, Objects)
+						foreach(Objects, function(_, Object)
+							Object.Visible = false
 						end)
-					end
-				else
-					return rawset(...)
+					end)
 				end
-			end;
-		}
-	)
+			else
+				return rawset(...)
+			end
+		end;
+	}
 )
