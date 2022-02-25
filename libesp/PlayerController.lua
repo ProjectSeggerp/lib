@@ -94,10 +94,12 @@ local function PlayerAdded(Player)
 	Controller.Objects[tostring(Player)] = Object
 
 	Colors[tostring(Player)] = ColorsMap.Innocent
-
+	print('watedstaus')
 	local WantedStatus = Player:WaitForChild'WantedStatus':WaitForChild'WantedStatus'
+	print(WantedStatus)
 
 	WantedStatus:GetPropertyChangedSignal'Value':Connect(function(Value)
+		print(Value)
 		local Character = Player.Character or Player.CharacterAdded:Wait()
 		local PlayerTeam = Character:WaitForChild('PlayerTeam', 10)
 		local Color
@@ -106,6 +108,7 @@ local function PlayerAdded(Player)
 		else
 			Color = ResolveStatus(Value)
 		end
+		print(Color)
 		Colors[tostring(Player)] = Color
 	end)
 end

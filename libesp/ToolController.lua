@@ -35,33 +35,8 @@ local Controller = {
 	Enabled = false;
 }
 
-local GovernmentTeams = {
-	'Sheriff';
-	'Military';
-	'Special Forces';
-}
-local ColorsMap = {
-	Innocent = Color3.fromRGB(153, 153, 153);
-	Warrant = Color3.fromRGB(255, 206, 82);
-	Wanted = Color3.fromRGB(170, 0, 0);
-	Government = Color3.fromRGB(38, 56, 124);
-}
-local function ResolveStatus(Value)
-	if Value == 1 then
-		return ColorsMap.Innocent
-	elseif Value == 2 then
-		return ColorsMap.Warrant
-	elseif Value == 3 then
-		return ColorsMap.Wanted
-	else
-		return ColorsMap.Innocent
-	end
-end
 
 local function ToolAdded(Player)
-
-	if Player == LocalPlayer then return end
-
 	local Object = {
 		Name = Draw'Text';
 		Box = Draw'Quad';
@@ -91,21 +66,6 @@ local function ToolAdded(Player)
 	Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
 
 	Controller.Objects[tostring(Player)] = Object
-
-	Colors[tostring(Player)] = ColorsMap.Innocent
-
-	local WantedStatus = Player:WaitForChild'WantedStatus':WaitForChild'WantedStatus'
-
-	WantedStatus:GetPropertyChangedSignal'Value':Connect(function(Value)
-		local Character = Player.Character or Player.CharacterAdded:Wait()
-		local PlayerTeam = Character:WaitForChild('PlayerTeam', 10)
-		local Color
-		if table.find(PlayerTeam.Value, GovernmentTeams) then
-			Color = ColorsMap.Government
-		else
-			Color = ResolveStatus(Value)
-		end
-	end)
 end
 
 local function ToolRemoving(Player)
