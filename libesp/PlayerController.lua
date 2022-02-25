@@ -85,7 +85,7 @@ local function PlayerAdded(Player)
 
 	Tracer.Thickness = 0.3
 	Tracer.Transparency = 1
-	Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y - 100)
+	Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
 
 	Controller.Objects[tostring(Player)] = Object
 
