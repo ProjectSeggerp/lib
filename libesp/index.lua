@@ -19,6 +19,6 @@ local function UpdateGlobal()
 	end
 end
 
-RunService:BindToRenderStep(InstanceIdentifier, Enum.RenderPriority.Camera.Value, UpdateGlobal)
+RunService:BindToRenderStep('_', Enum.RenderPriority.Camera.Value, UpdateGlobal)
 
 return Library
