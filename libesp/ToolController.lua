@@ -58,7 +58,7 @@ local function ResolveStatus(Value)
 	end
 end
 
-local function PlayerAdded(Player)
+local function ToolAdded(Player)
 
 	if Player == LocalPlayer then return end
 
@@ -108,7 +108,7 @@ local function PlayerAdded(Player)
 	end)
 end
 
-local function PlayerRemoving(Player)
+local function ToolRemoving(Player)
 	local Object = Controller.Objects[tostring(Player)]
 	if Object then
 		for _, DrawingObject in next, Object do
@@ -121,9 +121,6 @@ for _, Player in next, Players:GetPlayers() do
 	coroutine.wrap(PlayerAdded)(Player)
 end
 
-Players.PlayerAdded:Connect(PlayerAdded)
-
-Players.PlayerRemoving:Connect(PlayerRemoving)
 
 
 function Controller:UpdateOperation()
@@ -134,9 +131,8 @@ function Controller:UpdateOperation()
 		DisplayHealth = true;
 		ShowDistance = true
 	]]
-	local Tracers, Boxes, DisplayHealth, ShowDistance =	Settings.Tracers,
+	local Tracers, Boxes, ShowDistance =	Settings.Tracers,
 														Settings.Boxes,
-														Settings.DisplayHealth,
 														Settings.ShowDistance;
 
 	for PlayerName, DrawingObjects in next, Controller.Objects do
