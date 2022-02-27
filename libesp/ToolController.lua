@@ -10,7 +10,7 @@ workspace:GetPropertyChangedSignal'CurrentCamera':Connect(
 	end
 )
 
-local RunService = game:GetService('RunService')
+local RunService = game:GetService'RunService'
 
 local Players = game:GetService'Players'
 local LocalPlayer = Players.LocalPlayer
@@ -27,21 +27,20 @@ end
 local Controller = {
 	Objects = {};
 	Settings = {
-		Tracers = true;
+		Tracers = false;
 		Boxes = true;
-		DisplayHealth = true;
 		ShowDistance = true
 	};
 	Enabled = false;
 }
 
 
-local function ToolAdded(Player)
+local function ToolAdded(Tool)
 	local Object = {
 		Name = Draw'Text';
 		Box = Draw'Quad';
 		Tracer = Draw'Line';
-		LinkedPlayer = Player;
+		_ = Tool;
 	}
 
 	local Name, Box, Tracer =	Object.Name,
@@ -65,22 +64,33 @@ local function ToolAdded(Player)
 	Tracer.Transparency = 1
 	Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
 
-	Controller.Objects[tostring(Player)] = Object
+	table.insert(Controller.Objects, Object)
 end
 
-local function ToolRemoving(Player)
-	local Object = Controller.Objects[tostring(Player)]
-	if Object then
-		for _, DrawingObject in next, Object do
+local function ToolRemoving(Tool)
+	local DrawingObjects
+	for _, Object in next, Controller.Objects do
+		if Object._ == Tool then
+			DrawingObjects = Object
+			break
+		end
+	end
+	if DrawingObjects then
+		for _, DrawingObject in next, DrawingObjects do
 			DrawingObject:Remove()
 		end
 	end
 end
 
-for _, Player in next, Players:GetPlayers() do
-	coroutine.wrap(PlayerAdded)(Player)
+local Drops = workspace:WaitForChild'Drops'
+
+for _, Drop in next, Drops:GetChildren() do
+	coroutine.wrap(ToolAdded)(Drop)
 end
 
+Drops.ChildAdded:Connect(ToolAdded)
+
+Drops.ChildRemoved:Connect(ToolRemoving)
 
 
 function Controller:UpdateOperation()
@@ -88,63 +98,52 @@ function Controller:UpdateOperation()
 	--[[
 		Tracers = true;
 		Boxes = true;
-		DisplayHealth = true;
 		ShowDistance = true
 	]]
 	local Tracers, Boxes, ShowDistance =	Settings.Tracers,
-														Settings.Boxes,
-														Settings.ShowDistance;
+											Settings.Boxes,
+											Settings.ShowDistance;
 
-	for PlayerName, DrawingObjects in next, Controller.Objects do
+	for _, DrawingObjects in next, Controller.Objects do
 		--[[
 			Name = Draw'Text';
 			Box = Draw'Quad';
 			Tracer = Draw'Line';
 		]]
-		local Player = DrawingObjects.LinkedPlayer
-		local Character = Player.Character
+		local Tool = DrawingObjects._
+		local ToolName = tostring(Tool)
 
-		if Character == nil then
-			continue
-		end
+		local Hitbox = Tool:FindFirstChild'hitbox'
 
-		local HumanoidRootPart = Character:FindFirstChild'HumanoidRootPart' or Character.PrimaryPart or Character:FindFirstChildWhichIsA'BasePart'
-		local Humanoid = Character:FindFirstChildWhichIsA'Humanoid'
-
-		if HumanoidRootPart and Humanoid then
-			local ScreenPosition, OnScreen = WorldToViewportPoint(HumanoidRootPart.Position)
+		if Hitbox then
+			local ScreenPosition, OnScreen = WorldToViewportPoint(Hitbox.Position)
 			if OnScreen then
-				local Health, MaxHealth = Humanoid.Health, Humanoid.MaxHealth
-
 				local Name, Box, Tracer=	DrawingObjects.Name,
 											DrawingObjects.Box,
 											DrawingObjects.Tracer;
 
-				local Distance = floor(DistanceFromCharacter(LocalPlayer, HumanoidRootPart.Position))
+				
+				local CoordinateFrame = Hitbox.CFrame
+				local Position, RightVector, UpVector = CoordinateFrame.Position, CoordinateFrame.RightVector, CoordinateFrame.UpVector
+				local DistanceCharacter = floor(DistanceFromCharacter(LocalPlayer, Position))
+				local Distance = (Camera.CFrame.Position - Position).Magnitude
 
-				local Text = (ShowDistance and ('[' .. Distance .. '] ') or '') .. PlayerName .. ((DisplayHealth and MaxHealth == 100) and format(' [%.2f%%]', (Health / MaxHealth) * 100) or '')
-				local Color = Colors[PlayerName]
+				local Text = (ShowDistance and ('[' .. DistanceCharacter .. '] ') or '') .. ToolName
 
 				Name.Text = Text
-				Name.Color = Color
 				Name.Size = clamp(18 - Distance, 18, 86)
 				Name.Position = Vector2.new(
 					WorldToViewportPoint(
-						HumanoidRootPart.CFrame.Position + HumanoidRootPart.CFrame.UpVector * (Distance / 25 + 3)
+						Position + UpVector * (Distance / 25 + 3)
 					).X,
 					WorldToViewportPoint(
-						HumanoidRootPart.CFrame.Position + HumanoidRootPart.CFrame.UpVector * (Distance / 40 + 3)
+						Position + UpVector * (Distance / 40 + 3)
 					).Y
 				)
 				Name.Visible = true
 
 				if Boxes then
-					Box.Color = Color
 					Box.Visible = true
-
-					local CoordinateFrame = HumanoidRootPart.CFrame
-
-					local Position, RightVector, UpVector = CoordinateFrame.Position, CoordinateFrame.RightVector, CoordinateFrame.UpVector
 
 					Box.PointA = Vector2.new(
 						WorldToViewportPoint(
@@ -187,7 +186,6 @@ function Controller:UpdateOperation()
 
 				if Tracers then
 					Tracer.Visible = true
-					Tracer.Color = Color
 					Tracer.To = Vector2.new(ScreenPosition.X, ScreenPosition.Y)
 				else
 					Tracer.Visible = false
@@ -201,8 +199,8 @@ function Controller:UpdateOperation()
 			end
 		else
 			local Name, Box, Tracer=	DrawingObjects.Name,
-											DrawingObjects.Box,
-											DrawingObjects.Tracer;
+										DrawingObjects.Box,
+										DrawingObjects.Tracer;
 
 			Name.Visible, Box.Visible, Tracer.Visible = false, false, false
 		end

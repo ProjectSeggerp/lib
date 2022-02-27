@@ -12,6 +12,7 @@ workspace:GetPropertyChangedSignal'CurrentCamera':Connect(
 )
 
 local RunService = game:GetService('RunService')
+local Teams = game:GetService('Teams')
 
 local Players = game:GetService'Players'
 local LocalPlayer = Players.LocalPlayer
@@ -28,7 +29,7 @@ end
 local Controller = {
 	Objects = {};
 	Settings = {
-		Tracers = true;
+		Tracers = false;
 		Boxes = true;
 		DisplayHealth = true;
 		ShowDistance = true
@@ -37,9 +38,9 @@ local Controller = {
 }
 
 local GovernmentTeams = {
-	'Sheriff';
-	'Military';
-	'Special Forces';
+	Teams:WaitForChild'Sheriff';
+	Teams:WaitForChild'Military';
+	Teams:WaitForChild'Special Forces';
 }
 local ColorsMap = {
 	Innocent = Color3.fromRGB(153, 153, 153);
@@ -63,11 +64,15 @@ local function PlayerAdded(Player)
 
 	if Player == LocalPlayer then return end
 
+	local PlayerName = tostring(Player)
+
+	Colors[PlayerName] = ColorsMap.Warrant
+
 	local Object = {
 		Name = Draw'Text';
 		Box = Draw'Quad';
 		Tracer = Draw'Line';
-		LinkedPlayer = Player;
+		_ = Player;
 	}
 
 	local Name, Box, Tracer =	Object.Name,
@@ -75,7 +80,6 @@ local function PlayerAdded(Player)
 								Object.Tracer;
 
 	Name.Center = true
-	-- // Adjust size based on view
 	Name.Size = 19
 	Name.Outline = true
 	Name.OutlineColor = Color3.new()
@@ -91,26 +95,23 @@ local function PlayerAdded(Player)
 	Tracer.Transparency = 1
 	Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
 
-	Controller.Objects[tostring(Player)] = Object
+	Controller.Objects[PlayerName] = Object
 
-	Colors[tostring(Player)] = ColorsMap.Innocent
-	print('watedstaus')
-	local WantedStatus = Player:WaitForChild'WantedStatus':WaitForChild'WantedStatus'
-	print(WantedStatus)
+	local WantedStatus = Player.WantedStatus.WantedStatus
 
-	WantedStatus:GetPropertyChangedSignal'Value':Connect(function(Value)
-		print(Value)
-		local Character = Player.Character or Player.CharacterAdded:Wait()
-		local PlayerTeam = Character:WaitForChild('PlayerTeam', 10)
-		local Color
-		if table.find(GovernmentTeams, PlayerTeam.Value) then
-			Color = ColorsMap.Government
+	local function UpdateColor()
+		local Value = WantedStatus.Value
+		if table.find(GovernmentTeams, Player.Team) then
+			Colors[PlayerName] = ColorsMap.Government
 		else
-			Color = ResolveStatus(Value)
+			Colors[PlayerName] = ResolveStatus(Value)
 		end
-		print(Color)
-		Colors[tostring(Player)] = Color
-	end)
+		print('New color for player!:', Colors[PlayerName])
+	end
+
+	WantedStatus.Changed:Connect(UpdateColor)
+
+	UpdateColor()
 end
 
 local function PlayerRemoving(Player)
@@ -150,7 +151,7 @@ function Controller:UpdateOperation()
 			Box = Draw'Quad';
 			Tracer = Draw'Line';
 		]]
-		local Player = DrawingObjects.LinkedPlayer
+		local Player = DrawingObjects._
 		local Character = Player.Character
 
 		if Character == nil then
@@ -169,9 +170,13 @@ function Controller:UpdateOperation()
 											DrawingObjects.Box,
 											DrawingObjects.Tracer;
 
-				local Distance = floor(DistanceFromCharacter(LocalPlayer, HumanoidRootPart.Position))
+				local CoordinateFrame = HumanoidRootPart.CFrame
+				local Position, RightVector, UpVector = CoordinateFrame.Position, CoordinateFrame.RightVector, CoordinateFrame.UpVector
 
-				local Text = (ShowDistance and ('[' .. Distance .. '] ') or '') .. PlayerName .. ((DisplayHealth and MaxHealth == 100) and format(' [%.2f%%]', (Health / MaxHealth) * 100) or '')
+				local DistanceCharacter = floor(DistanceFromCharacter(LocalPlayer, Position))
+				local Distance = (Camera.CFrame.Position - Position).Magnitude
+
+				local Text = (ShowDistance and ('[' .. DistanceCharacter .. '] ') or '') .. PlayerName .. ((DisplayHealth and MaxHealth == 100) and format(' [%.2f%%]', (Health / MaxHealth) * 100) or '')
 				local Color = Colors[PlayerName]
 
 				Name.Text = Text
@@ -179,10 +184,10 @@ function Controller:UpdateOperation()
 				Name.Size = clamp(18 - Distance, 18, 86)
 				Name.Position = Vector2.new(
 					WorldToViewportPoint(
-						HumanoidRootPart.CFrame.Position + HumanoidRootPart.CFrame.UpVector * (Distance / 25 + 3)
+						Position + UpVector * (Distance / 25 + 3)
 					).X,
 					WorldToViewportPoint(
-						HumanoidRootPart.CFrame.Position + HumanoidRootPart.CFrame.UpVector * (Distance / 40 + 3)
+						Position + UpVector * (Distance / 40 + 3)
 					).Y
 				)
 				Name.Visible = true
@@ -191,9 +196,6 @@ function Controller:UpdateOperation()
 					Box.Color = Color
 					Box.Visible = true
 
-					local CoordinateFrame = HumanoidRootPart.CFrame
-
-					local Position, RightVector, UpVector = CoordinateFrame.Position, CoordinateFrame.RightVector, CoordinateFrame.UpVector
 
 					Box.PointA = Vector2.new(
 						WorldToViewportPoint(
