@@ -32,7 +32,7 @@ local Controller = {
 		Tracers = false;
 		Boxes = true;
 		DisplayHealth = true;
-		ShowDistance = true
+		DisplayDistance = true
 	};
 	Enabled = false;
 }
@@ -138,12 +138,12 @@ function Controller:UpdateOperation()
 		Tracers = true;
 		Boxes = true;
 		DisplayHealth = true;
-		ShowDistance = true
+		DisplayDistance = true
 	]]
-	local Tracers, Boxes, DisplayHealth, ShowDistance =	Settings.Tracers,
+	local Tracers, Boxes, DisplayHealth, DisplayDistance =	Settings.Tracers,
 														Settings.Boxes,
 														Settings.DisplayHealth,
-														Settings.ShowDistance;
+														Settings.DisplayDistance;
 
 	for PlayerName, DrawingObjects in next, Controller.Objects do
 		--[[
@@ -176,7 +176,7 @@ function Controller:UpdateOperation()
 				local DistanceCharacter = floor(DistanceFromCharacter(LocalPlayer, Position))
 				local Distance = (Camera.CFrame.Position - Position).Magnitude
 
-				local Text = (ShowDistance and ('[' .. DistanceCharacter .. '] ') or '') .. PlayerName .. ((DisplayHealth and MaxHealth == 100) and format(' [%.2f%%]', (Health / MaxHealth) * 100) or '')
+				local Text = (DisplayDistance and ('[' .. DistanceCharacter .. '] ') or '') .. PlayerName .. ((DisplayHealth and MaxHealth == 100) and format(' [%.2f%%]', (Health / MaxHealth) * 100) or '')
 				local Color = Colors[PlayerName]
 
 				Name.Text = Text

@@ -78,12 +78,12 @@ local function switch(toCompare)
 		local _ = possible[toCompare]
 		if _ then
 			_(toCompare)
-		return
-	end
+			return
+		end
 
-	local _ = possible['default']
-	if _ then
-		_(toCompare)
+		local _ = possible['default']
+		if _ then
+			_(toCompare)
 		end
 	end
 end
@@ -611,10 +611,6 @@ function Library:CreateWindow(WindowName)
 				}
 			)
 
-			if DefaultValue == nil then
-				List.Value = Values[1]
-			end
-
 			List.Label.Text = string.format('  %s <%s>', List.Identifier, tostring(List.Value))
 
 			if List.Value then
@@ -652,6 +648,10 @@ function Library:CreateWindow(WindowName)
 					tostring(List.Value) or '?',
 					List.Selected and ' <' or ''
 				)
+			end
+
+			if DefaultValue == nil then
+				List.Value = Values[1]
 			end
 
 			insert(Section.Elements, List)
