@@ -660,7 +660,6 @@ function Library:CreateWindow(WindowName)
 				Callback = Callback;
 				Binding = false;
 				Selected = false;
-				InternalIdentifier = HttpService:GenerateGUID(false);
 				Label = Draw(
 					'Text',
 					{
@@ -869,7 +868,7 @@ function Library:CreateWindow(WindowName)
 
 	function Window:SetupNavigationControls()
 		for InputClass, KeyCodes in next, Library.NavigationSettings do
-			local GUID = HttpService:GenerateGUID(false)
+			local GUID = string.lower(HttpService:GenerateGUID(false))
 			ContextActionService:BindCoreActionAtPriority(
 				GUID,
 				function(...)
@@ -969,3 +968,4 @@ function Library:CreateWindow(WindowName)
 end
 
 
+return Library

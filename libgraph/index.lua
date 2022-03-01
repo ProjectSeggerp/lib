@@ -6,9 +6,32 @@ workspace:GetPropertyChangedSignal'CurrentCamera':Connect(function(_)
 	Camera = _
 end)
 
+local function switch(toCompare)
+	return function(possible)
+		local _ = possible[toCompare]
+		if _ then
+			_(toCompare)
+		return
+	end
+
+	local _ = possible['default']
+	if _ then
+		_(toCompare)
+		end
+	end
+end
+
+local PositioningType = {
+	Next = 1;
+	Previous = 2;
+	Up = 3;
+	Down = 4;
+}
+
 local Library = {
 	Graphs = {};
 	OriginOffset = Vector2.new(0, 15);
+	PositioningType = PositioningType.Next;
 }
 
 function Library:Tween(Line, From, To)
@@ -102,7 +125,20 @@ function Library:CreateGraph(Information)
 		table.insert(Graph.Nodes, Line)
 	end
 
-	Library.OriginOffset += Vector2.new(Graph.Size.X, 0)
+	switch(Library.PositioningType) {
+		[PositioningType.Next] = function()
+			Library.OriginOffset += Vector2.new(Graph.Size.X, 0)
+		end;
+		[PositioningType.Previous] = function()
+			Library.OriginOffset += Vector2.new(-Graph.Size.X, 0)
+		end;
+		[PositioningType.Up] = function()
+			Library.OriginOffset += Vector2.new(0, Graph.Size.Y)
+		end;
+		[PositioningType.Down] = function()
+			Library.OriginOffset += Vector2.new(0, -Graph.Size.Y)
+		end;
+	}
 
 	function Graph:Render()
 		XLine.From, YLine.From = Graph.AxesOrigin, Graph.AxesOrigin
@@ -128,11 +164,11 @@ function Library:CreateGraph(Information)
 				local From
 
 				if Index == 1 then
-					From = Graph.AxesOrigin
+					From = Graph.AxesOrigin + Vector2.new(1, 1)
 				else
 					From = Vector2.new(
-						(Graph.AxesOrigin.X + 1) + (Index - 1) * (Graph.Size.X / Graph.NodeAmount),
-						(Graph.AxesOrigin.Y - 1) - (PreviousValue * (Graph.Size.Y / Graph.MaxValue))
+						(Graph.AxesOrigin.X) + (Index - 1) * (Graph.Size.X / Graph.NodeAmount),
+						(Graph.AxesOrigin.Y) - (PreviousValue * (Graph.Size.Y / Graph.MaxValue))
 					)
 				end
 
@@ -156,3 +192,5 @@ function Library:CreateGraph(Information)
 
 	return Graph
 end
+
+return Library
