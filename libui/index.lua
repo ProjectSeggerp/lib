@@ -324,7 +324,10 @@ function Library:CreateWindow(WindowName)
 						local Button, Index, Value = ...;
 						print('Button.__newindex', ...)
 						switch(Index) {
-							Identifier = self.Render;
+							Identifier = function()
+								rawset(InternalButton, Index, Value)
+								Button:Render()
+							end;
 							Selected = function()
 								Button:Highlight(Value)
 								Button:Render()
@@ -401,7 +404,14 @@ function Library:CreateWindow(WindowName)
 						print('Selector.__newindex', ...)
 
 						switch(Index) {
-							Identifier = Selector.Render; Value = Selector.Render;
+							Identifier = function()
+								rawset(InternalSelector, Index, Value)
+								Selector:Render()
+							end;
+							Value = function()
+								rawset(InternalSelector, Index, Value)
+								Selector:Render()
+							end;
 							Selected = function()
 								Selector:Highlight(Value)
 								Selector:Render()
@@ -486,7 +496,14 @@ function Library:CreateWindow(WindowName)
 						local Toggle, Index, Value = ...
 						print('Toggle.__newindex', ...)
 						switch(Index) {
-							Identifier = Toggle.Render; Value = Toggle.Render;
+							Identifier = function()
+								rawset(InternalToggle, Index, Value)
+								Toggle:Render()
+							end;
+							Value = function()
+								rawset(InternalToggle, Index, Value)
+								Toggle:Render()
+							end;
 							Selected = function()
 								Toggle:Highlight(Value)
 								Toggle:Render()
@@ -563,7 +580,14 @@ function Library:CreateWindow(WindowName)
 						print('List.__newindex', ...)
 
 						switch(Index) {
-							Identifier = List.Render; Value = List.Render;
+							Identifier = function()
+								rawset(InternalList, Index, Value)
+								List:Render()
+							end;
+							Value = function()
+								rawset(InternalList, Index, Value)
+								List:Render()
+							end;
 							Selected = function()
 								List:Highlight(Value)
 								List:Render()
@@ -701,11 +725,19 @@ function Library:CreateWindow(WindowName)
 						print('Keybind.__newindex', ...)
 
 						switch(Index) {
-							Value = Keybind.Render; Identifier = Keybind.Render;
+							Identifier = function()
+								rawset(InternalKeybind, Index, Value)
+								Keybind:Render()
+							end;
+							Value = function()
+								rawset(InternalKeybind, Index, Value)
+								Keybind:Render()
+							end;
 							Binding = function()
 								if Value then
 									Keybind.Value = Enum.KeyCode.Unknown
 									Window.IsBindingKey = Value
+									Keybind:Render()
 								end
 							end;
 							Selected = function()
