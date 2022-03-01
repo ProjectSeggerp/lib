@@ -5,6 +5,7 @@ local RunService = game:GetService'RunService'
 local HttpService = game:GetService'HttpService'
 local GuiService = game:GetService'GuiService'
 local UserInputService = game:GetService'UserInputService'
+local Players = game:GetService('Players')
 local ContextActionService = game:GetService'ContextActionService'
 
 local Color, Vector2, DrawingNew = Color3.fromRGB, Vector2.new, Drawing.new
@@ -644,13 +645,27 @@ function Library:CreateWindow(WindowName)
 		end
 
 		function Section:CreatePlayerSelector(Identifier, Callback, DefaultValue)
+			local TPlayers = Players:GetPlayers()
 			local List = self:CreateList(
 				Identifier,
-				GlobalPlayerTable,
+				TPlayers,
 				Callback,
 				DefaultValue
 			)
 			rawset(List, '_', 'PlayerSelector')
+			Players.PlayerAdded:Connect(function(Player)
+				table.insert(TPlayers, Player)
+			end)
+			Players.PlayerRemoving:Connect(function(Player)
+				local Index = find(TPlayers, Player)
+				if Index then
+					table.remove(TPlayers, Index)
+					if List.Value == Player then
+						List:Next()
+					end
+				end
+			end)
+			return List
 		end
 
 		function Section:CreateKeybind(Identifier, Callback, DefaultValue)
