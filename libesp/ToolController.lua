@@ -145,40 +145,40 @@ function Controller:UpdateOperation()
 				if Boxes then
 					Box.Visible = true
 
+					local _ = WorldToViewportPoint(
+						Position + RightVector * -2 + UpVector * 2.5
+					)
+
 					Box.PointA = Vector2.new(
-						WorldToViewportPoint(
-							Position + RightVector * -2 + UpVector * 2.5
-						).X,
-						WorldToViewportPoint(
-							Position + RightVector * -2 + UpVector * 2.5
-						).Y
+						_.X,
+						_.Y
+					)
+
+					_ = WorldToViewportPoint(
+						Position + RightVector * 2 + UpVector * 2.5
 					)
 
 					Box.PointB = Vector2.new(
-						WorldToViewportPoint(
-							Position + RightVector * 2 + UpVector * 2.5
-						).X,
-						WorldToViewportPoint(
-							Position + RightVector * 2 + UpVector * 2.5
-						).Y
+						_.X,
+						_.Y
+					)
+
+					_ = WorldToViewportPoint(
+						Position + RightVector * 2 + UpVector * -2.5
 					)
 
 					Box.PointC = Vector2.new(
-						WorldToViewportPoint(
-							Position + RightVector * 2 + UpVector * -2.5
-						).X,
-						WorldToViewportPoint(
-							Position + RightVector * 2 + UpVector * -2.5
-						).Y
+						_.X,
+						_.Y
+					)
+
+					_ = WorldToViewportPoint(
+						Position + RightVector * -2 + UpVector * -2.5
 					)
 
 					Box.PointD = Vector2.new(
-						WorldToViewportPoint(
-							Position + RightVector * -2 + UpVector * -2.5
-						).X,
-						WorldToViewportPoint(
-							Position + RightVector * -2 + UpVector * -2.5
-						).Y
+						_.X,
+						_ .Y
 					)
 				else
 					Box.Visible = false
