@@ -352,7 +352,7 @@ function Library:CreateWindow(WindowName)
 					__index = InternalButton;
 					__newindex = function(...)
 						local Button, Index, Value = ...;
-						print('Button.__newindex', ...)
+						--print('Button.__newindex', ...)
 						switch(Index) {
 							Identifier = function()
 								rawset(InternalButton, Index, Value)
@@ -429,7 +429,7 @@ function Library:CreateWindow(WindowName)
 					__index = InternalSelector;
 					__newindex = function(...)
 						local Selector, Index, Value = ...;
-						print('Selector.__newindex', ...)
+						--print('Selector.__newindex', ...)
 
 						switch(Index) {
 							Identifier = function()
@@ -520,7 +520,7 @@ function Library:CreateWindow(WindowName)
 					__index = InternalToggle;
 					__newindex = function(...)
 						local Toggle, Index, Value = ...
-						print('Toggle.__newindex', ...)
+						--print('Toggle.__newindex', ...)
 						switch(Index) {
 							Identifier = function()
 								rawset(InternalToggle, Index, Value)
@@ -601,8 +601,7 @@ function Library:CreateWindow(WindowName)
 					__index = InternalList;
 					__newindex = function(...)
 						local List, Index, Value = ...
-						print('List.__newindex', ...)
-
+						--print('List.__newindex', ...)
 						switch(Index) {
 							Identifier = function()
 								rawset(InternalList, Index, Value)
@@ -742,9 +741,7 @@ function Library:CreateWindow(WindowName)
 					__index = InternalKeybind;
 					__newindex = function(...)
 						local Keybind, Index, Value = ...
-
-						print('Keybind.__newindex', ...)
-
+						--print('Keybind.__newindex', ...)
 						switch(Index) {
 							Identifier = function()
 								rawset(InternalKeybind, Index, Value)
@@ -866,11 +863,8 @@ function Library:CreateWindow(WindowName)
 		end
 		local Index = find(Section.Elements, Section.SelectedElement) or 0
 
-		print(Index, Section.SelectedElement)
-
 		if Section.Elements[Index + 1] then
 			Section.Elements[Index + 1].Selected = true
-			print()
 		end
 	end
 
@@ -931,7 +925,9 @@ function Library:CreateWindow(WindowName)
 				HelperFunctions:SetElementRangeVisibility(Section.Elements, false)
 			end
 
-			HelperFunctions:SetElementRangeVisibility(Section.Labels, State)
+			for _ = 1, #Section.Labels do
+				Section.Labels[_].Visible = State
+			end
 		end
 		Window.Visible = State
 		if Window.Visible then
