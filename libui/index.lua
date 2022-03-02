@@ -5,7 +5,7 @@ local RunService = game:GetService'RunService'
 local HttpService = game:GetService'HttpService'
 local GuiService = game:GetService'GuiService'
 local UserInputService = game:GetService'UserInputService'
-local Players = game:GetService('Players')
+local Players = game:GetService'Players'
 local ContextActionService = game:GetService'ContextActionService'
 
 local Color, Vector2, DrawingNew = Color3.fromRGB, Vector2.new, Drawing.new
@@ -238,9 +238,7 @@ function Library:CreateWindow(WindowName)
 			{
 				__type = 'Section';
 				__tostring = SectionName;
-				__index = function(...)
-					return rawget(InternalSection, select(2, ...))
-				end;
+				__index = InternalSection;
 				__newindex = function(...)
 					local Section, Index, Value = ...
 
@@ -351,9 +349,7 @@ function Library:CreateWindow(WindowName)
 				{},
 				{
 					__type = 'Button';
-					__index = function(...)
-						return rawget(InternalButton, select(2, ...))
-					end;
+					__index = InternalButton;
 					__newindex = function(...)
 						local Button, Index, Value = ...;
 						print('Button.__newindex', ...)
@@ -430,9 +426,7 @@ function Library:CreateWindow(WindowName)
 				{},
 				{
 					__type = 'Selector';
-					__index = function(...)
-						return rawget(InternalSelector, select(2, ...))
-					end;
+					__index = InternalSelector;
 					__newindex = function(...)
 						local Selector, Index, Value = ...;
 						print('Selector.__newindex', ...)
@@ -523,9 +517,7 @@ function Library:CreateWindow(WindowName)
 				{},
 				{
 					__type = 'Toggle';
-					__index = function(...)
-						return rawget(InternalToggle, select(2, ...))
-					end;
+					__index = InternalToggle;
 					__newindex = function(...)
 						local Toggle, Index, Value = ...
 						print('Toggle.__newindex', ...)
@@ -606,9 +598,7 @@ function Library:CreateWindow(WindowName)
 				{},
 				{
 					__type = 'List';
-					__index = function(...)
-						return rawget(InternalList, select(2, ...))
-					end;
+					__index = InternalList;
 					__newindex = function(...)
 						local List, Index, Value = ...
 						print('List.__newindex', ...)
@@ -710,7 +700,6 @@ function Library:CreateWindow(WindowName)
 				Callback,
 				DefaultValue
 			)
-			rawset(List, '_', 'PlayerSelector')
 			Players.PlayerAdded:Connect(function(Player)
 				table.insert(TPlayers, Player)
 			end)
@@ -750,9 +739,7 @@ function Library:CreateWindow(WindowName)
 				{},
 				{
 					__type = 'Keybind';
-					__index = function(...)
-						return rawget(InternalKeybind, select(2, ...))
-					end;
+					__index = InternalKeybind;
 					__newindex = function(...)
 						local Keybind, Index, Value = ...
 
@@ -943,6 +930,8 @@ function Library:CreateWindow(WindowName)
 			elseif State == false then
 				HelperFunctions:SetElementRangeVisibility(Section.Elements, false)
 			end
+
+			HelperFunctions:SetElementRangeVisibility(Section.Labels, State)
 		end
 		Window.Visible = State
 		if Window.Visible then
