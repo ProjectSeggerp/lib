@@ -251,12 +251,18 @@ function Library:CreateWindow(WindowName)
 										Element.Label.Visible = true
 										print(Element.Identifier, true)
 									end
+									for _ = 1, #Section.Labels do
+										Section.Labels[_].Visible = true
+									end
 								end;
 								[false] = function()
 									Section.Title.Text = string.format('> %s', Section.Identifier)
 									for _, Element in next, Section.Elements do
 										Element.Label.Visible = false
 										print(Element.Identifier, false)
+									end
+									for _ = 1, #Section.Labels do
+										Section.Labels[_].Visible = false
 									end
 								end;
 							}
@@ -919,14 +925,16 @@ function Library:CreateWindow(WindowName)
 			Section.Title.Visible = State
 			if State and Section.Selected then
 				HelperFunctions:SetElementRangeVisibility(Section.Elements, true)
+				for _ = 1, #Section.Labels do
+					Section.Labels[_].Visible = true
+				end
 			elseif State and Section.Selected == false then
 				HelperFunctions:SetElementRangeVisibility(Section.Elements, false)
 			elseif State == false then
 				HelperFunctions:SetElementRangeVisibility(Section.Elements, false)
-			end
-
-			for _ = 1, #Section.Labels do
-				Section.Labels[_].Visible = State
+				for _ = 1, #Section.Labels do
+					Section.Labels[_].Visible = true
+				end
 			end
 		end
 		Window.Visible = State
