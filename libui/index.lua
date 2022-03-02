@@ -129,6 +129,13 @@ local HelperFunctions do
 		end
 	end
 
+	function HelperFunctions:SetElementRangeVisibility(Range, Value)
+		for Index = 1, #Range do
+			local Element = Range[Index]
+			Element.Label.Visible = Value
+		end
+	end
+
 	function HelperFunctions:ProxyTable(T)
 		return setmetatable(
 			{},
@@ -150,7 +157,7 @@ function Library:CreateWindow(WindowName)
 		Name = WindowName or 'unauthorized was here';
 		HelpLabels = {};
 		HelpLabelOffset = _;
-		SectionOffset = 6;
+		SectionOffset = _;
 		IsBindingKey = false;
 		SelectedSection = nil;
 		Keybinds = {};
@@ -199,7 +206,7 @@ function Library:CreateWindow(WindowName)
 				Text = Text;
 				Font = Window.Theme.Font;
 				Size = Window.Theme.Size;
-				Visible = Window.Visible;
+				Visible = Section.Selected;
 				Color = Window.Theme.HighlightColor;
 				Transparency = Window.Theme.Transparency;
 				Position = Vector2(ViewportSize.X, Window.HelpLabelOffset);
@@ -221,8 +228,8 @@ function Library:CreateWindow(WindowName)
 			Identifier = SectionName or '?';
 			Elements = {};
 			Labels = {};
-			ElementOffset = _;
-			DesignatedOffset = Window.SectionOffset;
+			ElementOffset = Vector2();
+			DesignatedOffset = _;
 			SelectedElement = nil;
 			Selected = false;
 		}
@@ -241,10 +248,18 @@ function Library:CreateWindow(WindowName)
 						Selected = function()
 							switch(Value) {
 								[true] = function()
-									Section.Title.Text = string.format('[ %s ]', Section.Identifier)
+									Section.Title.Text = string.format('[ %s ] >', Section.Identifier)
+									for _, Element in next, Section.Elements do
+										Element.Label.Visible = true
+										print(Element.Identifier, true)
+									end
 								end;
 								[false] = function()
 									Section.Title.Text = string.format('> %s', Section.Identifier)
+									for _, Element in next, Section.Elements do
+										Element.Label.Visible = false
+										print(Element.Identifier, false)
+									end
 								end;
 							}
 						end
@@ -264,15 +279,34 @@ function Library:CreateWindow(WindowName)
 				Visible = Window.Visible;
 				Color = Window.Theme.HighlightColor;
 				Transparency = Window.Theme.Transparency;
-				Position = Vector2(Window.SectionOffset, _);
+				Position = Vector2(6, Window.SectionOffset);
 			}
 		)
 
-		local HorizontalWidth = Section.Title.TextBounds.X
+		--local HorizontalWidth = Section.Title.TextBounds.X
 
-		Window.SectionOffset += (HorizontalWidth * 2) * (3 / 4)
+		--Window.SectionOffset += (HorizontalWidth * 2) * (3 / 4)
 
-		Section.ElementOffset += 15
+		local TemporalText = Draw(
+			'Text',
+			{
+				Text = string.format('[ %s ] >', Section.Identifier);
+				Font = Window.Theme.Font;
+				Size = Window.Theme.Size;
+				Visible = false;
+				Position = Vector2(-ViewportSize.X, -ViewportSize.Y)
+			}
+		)
+
+		local SelectedTextBounds = TemporalText.TextBounds
+
+		TemporalText:Remove()
+
+		TemporalText = nil
+
+		Section.ElementOffset = Vector2(Section.Title.Position.X + SelectedTextBounds.X + 3, Section.Title.Position.Y)
+
+		Window.SectionOffset += Section.Title.TextBounds.Y + 10
 
 		function Section:CreateLabel(Text)
 			local Label = Draw(
@@ -281,16 +315,16 @@ function Library:CreateWindow(WindowName)
 					Text = '> ' .. Text;
 					Font = Window.Theme.Font;
 					Size = Window.Theme.Size;
-					Visible = Window.Visible;
+					Visible = Section.Selected;
 					Color = Window.Theme.HighlightColor;
 					Transparency = Window.Theme.Transparency;
-					Position = Vector2(Section.DesignatedOffset, Section.ElementOffset);
+					Position = Section.ElementOffset;
 				}
 			)
 
 			insert(Section.Labels, Label)
 
-			Section.ElementOffset += 15
+			Section.ElementOffset += Vector2(0, 15)
 
 			return Label
 		end
@@ -306,10 +340,10 @@ function Library:CreateWindow(WindowName)
 						Text = '?';
 						Font = Window.Theme.Font;
 						Size = Window.Theme.Size;
-						Visible = Window.Visible;
+						Visible = Section.Selected;
 						Color = Window.Theme.Color;
 						Transparency = Window.Theme.Transparency;
-						Position = Vector2(Section.DesignatedOffset, Section.ElementOffset);
+						Position = Section.ElementOffset;
 					}
 				)
 			}
@@ -349,7 +383,7 @@ function Library:CreateWindow(WindowName)
 
 			Button.Label.Text = string.format('  %s', Button.Identifier)
 
-			Section.ElementOffset += 15
+			Section.ElementOffset += Vector2(0, 15)
 
 			insert(Section.Elements, Button)
 
@@ -385,10 +419,10 @@ function Library:CreateWindow(WindowName)
 						Text = '?';
 						Font = Window.Theme.Font;
 						Size = Window.Theme.Size;
-						Visible = Window.Visible;
+						Visible = Section.Selected;
 						Color = Window.Theme.Color;
 						Transparency = Window.Theme.Transparency;
-						Position = Vector2(Section.DesignatedOffset, Section.ElementOffset);
+						Position = Section.ElementOffset;
 					}
 				)
 			}
@@ -436,7 +470,7 @@ function Library:CreateWindow(WindowName)
 
 			Selector.Callback(Selector.Value)
 
-			Section.ElementOffset += 15
+			Section.ElementOffset += Vector2(0, 15)
 
 			function Selector:Highlight(State)
 				Selector.Label.Color = (State and Window.Theme.HighlightColor) or Window.Theme.Color
@@ -478,10 +512,10 @@ function Library:CreateWindow(WindowName)
 						Text = '?';
 						Font = Window.Theme.Font;
 						Size = Window.Theme.Size;
-						Visible = Window.Visible;
+						Visible = Section.Selected;
 						Color = Window.Theme.Color;
 						Transparency = Window.Theme.Transparency;
-						Position = Vector2(Section.DesignatedOffset, Section.ElementOffset);
+						Position = Section.ElementOffset;
 					}
 				)
 			}
@@ -528,7 +562,7 @@ function Library:CreateWindow(WindowName)
 
 			Toggle.Callback(Toggle.Value)
 
-			Section.ElementOffset += 15
+			Section.ElementOffset += Vector2(0, 15)
 
 			function Toggle:Highlight(State)
 				Toggle.Label.Color = (State and Window.Theme.HighlightColor) or Window.Theme.Color
@@ -561,10 +595,10 @@ function Library:CreateWindow(WindowName)
 						Text = '?';
 						Font = Window.Theme.Font;
 						Size = Window.Theme.Size;
-						Visible = Window.Visible;
+						Visible = Section.Selected;
 						Color = Window.Theme.Color;
 						Transparency = Window.Theme.Transparency;
-						Position = Vector2(Section.DesignatedOffset, Section.ElementOffset);
+						Position = Section.ElementOffset;
 					}
 				)
 			}
@@ -617,7 +651,7 @@ function Library:CreateWindow(WindowName)
 				List.Callback(List.Value)
 			end
 
-			Section.ElementOffset += 15
+			Section.ElementOffset += Vector2(0, 15)
 
 			function List:Highlight(State)
 				List.Label.Color = (State and Window.Theme.HighlightColor) or Window.Theme.Color
@@ -705,10 +739,10 @@ function Library:CreateWindow(WindowName)
 						Text = '?';
 						Font = Window.Theme.Font;
 						Size = Window.Theme.Size;
-						Visible = Window.Visible;
+						Visible = Section.Selected;
 						Color = Window.Theme.Color;
 						Transparency = Window.Theme.Transparency;
-						Position = Vector2(Section.DesignatedOffset, Section.ElementOffset);
+						Position = Section.ElementOffset;
 					}
 				)
 			}
@@ -762,7 +796,7 @@ function Library:CreateWindow(WindowName)
 
 			Keybind.Label.Text = string.format('  %s <%s>', Keybind.Identifier, Keybind.Value.Name)
 
-			Section.ElementOffset += 15
+			Section.ElementOffset += Vector2(0, 15)
 
 			function Keybind:Highlight(State)
 				Keybind.Label.Color = (State and Window.Theme.HighlightColor) or Window.Theme.Color
@@ -899,13 +933,18 @@ function Library:CreateWindow(WindowName)
 		end
 	end
 
-	function Window:ToggleVisibility()
-		for _, DrawingObject in next, Library.Drawables.DrawingObjects do
-			if type(DrawingObject) == 'table' and DrawingExists(DrawingObject) then
-				DrawingObject.Visible = not DrawingObject.Visible
+	function Window:ToggleVisibility(State)
+		for _, Section in next, Window.Sections do
+			Section.Title.Visible = State
+			if State and Section.Selected then
+				HelperFunctions:SetElementRangeVisibility(Section.Elements, true)
+			elseif State and Section.Selected == false then
+				HelperFunctions:SetElementRangeVisibility(Section.Elements, false)
+			elseif State == false then
+				HelperFunctions:SetElementRangeVisibility(Section.Elements, false)
 			end
 		end
-		Window.Visible = not Window.Visible
+		Window.Visible = State
 		if Window.Visible then
 			Window:SetupNavigationControls()
 		else
@@ -964,7 +1003,7 @@ function Library:CreateWindow(WindowName)
 		local KeyCode = InputObject.KeyCode
 
 		if UserInputService:GetFocusedTextBox() == nil and find(Library.NavigationSettings.ToggleVisibility, KeyCode) ~= nil then
-			return Window:ToggleVisibility()
+			return Window:ToggleVisibility(not Window.Visible)
 		end
 
 		if UserInputService:GetFocusedTextBox() then
@@ -1013,6 +1052,4 @@ function Library:CreateWindow(WindowName)
 
 	return Window
 end
-
-
 return Library
