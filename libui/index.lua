@@ -206,7 +206,7 @@ function Library:CreateWindow(WindowName)
 				Text = Text;
 				Font = Window.Theme.Font;
 				Size = Window.Theme.Size;
-				Visible = Section.Selected;
+				Visible = Window.Visible;
 				Color = Window.Theme.HighlightColor;
 				Transparency = Window.Theme.Transparency;
 				Position = Vector2(ViewportSize.X, Window.HelpLabelOffset);
@@ -248,7 +248,7 @@ function Library:CreateWindow(WindowName)
 						Selected = function()
 							switch(Value) {
 								[true] = function()
-									Section.Title.Text = string.format('[ %s ] >', Section.Identifier)
+									Section.Title.Text = string.format('[ %s ]', Section.Identifier)
 									for _, Element in next, Section.Elements do
 										Element.Label.Visible = true
 										print(Element.Identifier, true)
