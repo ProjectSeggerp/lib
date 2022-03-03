@@ -126,16 +126,16 @@ function Library:CreateGraph(Information)
 	end
 
 	switch(Library.PositioningType) {
-		[PositioningType.Next] = function()
+		[PositioningType.Previous] = function()
 			Library.OriginOffset += Vector2.new(Graph.Size.X, 0)
 		end;
-		[PositioningType.Previous] = function()
+		[PositioningType.Next] = function()
 			Library.OriginOffset += Vector2.new(-Graph.Size.X, 0)
 		end;
-		[PositioningType.Up] = function()
+		[PositioningType.Down] = function()
 			Library.OriginOffset += Vector2.new(0, Graph.Size.Y)
 		end;
-		[PositioningType.Down] = function()
+		[PositioningType.Up] = function()
 			Library.OriginOffset += Vector2.new(0, -Graph.Size.Y)
 		end;
 	}

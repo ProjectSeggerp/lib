@@ -1,7 +1,7 @@
 local HttpService = game:GetService'HttpService'
 local RunService = game:GetService'RunService'
 local workspace = workspace
-local InstanceIdentifier = HttpService:GenerateGUID(false)
+local InstanceIdentifier = HttpService:GenerateGUID(false):lower()
 
 local Library = {
 	Controllers = {};
@@ -19,6 +19,6 @@ local function UpdateGlobal()
 	end
 end
 
-RunService:BindToRenderStep('_', Enum.RenderPriority.Camera.Value, UpdateGlobal)
+RunService:BindToRenderStep(InstanceIdentifier, Enum.RenderPriority.Camera.Value, UpdateGlobal)
 
 return Library

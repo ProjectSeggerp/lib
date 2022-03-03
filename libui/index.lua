@@ -1,7 +1,6 @@
 ---@diagnostic disable: invalid-class-name
 local insert, remove, find = table.insert, table.remove, table.find
 
-local RunService = game:GetService'RunService'
 local HttpService = game:GetService'HttpService'
 local GuiService = game:GetService'GuiService'
 local UserInputService = game:GetService'UserInputService'
