@@ -93,7 +93,7 @@ local ZIndex = {
 	UIShadow = 1;
 	UIFrameBackground = 100;
 	UIFrameRing = 101;
-	ShadowInner = 101;
+	UITitleSquare = 102;
 
 
 	MousePointer = 2 ^ 31 - 1;
@@ -140,9 +140,32 @@ function Library:CreateWindow(WindowName)
 		Library.Sizes.Window.X,
 		Library.Sizes.Window.Y - (Library.Sizes.WindowTitleSquare.Y + Library.Sizes.WindowBodyLineThickness)
 	)
+	Window.Drawables.PrimaryWindowRing.ZIndex = ZIndex.UIFrameRing
+
+	Window.Drawables.TitleSquare = libdraw'Square'
+	Window.Drawables.TitleSquare.Filled = true
+
+	Window.Drawables.TitleSquare.Color = Theme.Background.Dark
+	Window.Drawables.TitleSquare.Position = Library.PositionReference
+	Window.Drawables.TitleSquare.Size = Library.Sizes.WindowTitleSquare
+
+	Window.Drawables.WindowBodyLine = libdraw'Line'
+
+	Window.Drawables.WindowBodyLine.Color = Theme.Accent
+	Window.Drawables.WindowBodyLine.Thickness = Library.Sizes.WindowBodyLineThickness
+	local BaseYValue = Library.PositionReference.Y + Library.Sizes.WindowTitleSquare.Y
+	Window.Drawables.WindowBodyLine.From = Vector(
+		Library.PositionReference.X,
+		BaseYValue
+	)
+	Window.Drawables.WindowBodyLine.To = Vector(
+		Library.PositionReference.X + Library.Sizes.Window.X,
+		BaseYValue
+	)
 
 	Window.Drawables.PrimaryWindowRing.Visible = true
-
+	Window.Drawables.TitleSquare.Visible = true
+	Window.Drawables.WindowBodyLine.Visible = true
 	return Window
 end
 

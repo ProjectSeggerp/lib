@@ -62,34 +62,33 @@ local function switch(toCompare)
 	end
 end
 
+local BaseClass = {
+	'Visible';
+	'ZIndex';
+	'Transparency';
+	'Color';
+}
+
+local ClassesProperties = {
+	Line = {'Thickness', 'From', 'To'};
+	Text = {'Text', 'Size', 'Center', 'Outline', 'OutlineColor', 'Position', 'TextBounds', 'Font'};
+	Image = {'Data', 'Size', 'Position', 'Rounding'};
+	Circle = {'Thickness', 'NumSides', 'Radius', 'Filled', 'Position'};
+	Square = {'Thickness', 'Size', 'Position', 'Filled'};
+}
+
+local function GetCorrespondingProperties(Class)
+	if ClassesProperties[Class] == nil then
+		error('type '..Class..' is not supported', 3)
+	else
+		return table.pack(unpack(BaseClass), unpack(ClassesProperties[Class]))
+	end
+end
+
 function Library:new(Class)
 	local Drawable = Drawing.new(Class)
-
-	local SetIndexes = {}
-	local Object, ObjectMetatable = {
-		LeftEdge = 0;
-		RightEdge = 0;
-		TopEdge = 0;
-		BottomEdge = 0;
-	}, {}
-
-	function ObjectMetatable:__newindex(...)
-		local Index = ...
-		insert(SetIndexes, Index)
-
-		return rawset(...)
-	end
-
-	setmetatable(
-		Object,
-		ObjectMetatable
-	)
-
-	for Index in next, Object do
-		print(Index)
-		insert(SetIndexes, Index)
-	end
-
+	local Properties = GetCorrespondingProperties(Class)
+	local Object = {}
 	local Proxy, ProxyMetatable = {
 		Drawable = Drawable;
 		Class = Class;
@@ -98,9 +97,26 @@ function Library:new(Class)
 	local EventEmitter = events:new()
 
 	function ProxyMetatable:__newindex(Index, Value)
-		if find(SetIndexes, Index) ~= nil then
+		if find(Properties, Index) == nil then
 			Object[Index] = Value
-			switch(Index) {
+		else
+			local err, res = pcall(
+				function()
+					Drawable[Index] = Value
+				end
+			)
+			if err == false then
+				error(string.format('%s: %s', tostring(Index) or '', res))
+			end
+			return switch(Index) {
+				Visible = function()
+					if Value then
+						QueueInsert(OutsideBounds, self)
+					else
+						QueueRemove(MouseInbounds, self)
+						QueueRemove(OutsideBounds, self)
+					end
+				end;
 				Position = function()
 					local Size = self.Size
 					if self.Class ~= 'Line' then
@@ -119,26 +135,7 @@ function Library:new(Class)
 						self.TopEdge = YPosition
 						self.BottomEdge = YPosition + Size.Y
 					end
-				end
-			}
-		else
-			local err, res = pcall(
-				function()
-					Drawable[Index] = Value
-				end
-			)
-			if err == false then
-				error(string.format('%s: %s', tostring(Index) or '', res))
-			end
-			return switch(Index) {
-				Visible = function()
-					if Value then
-						QueueInsert(OutsideBounds, self)
-					else
-						QueueRemove(MouseInbounds, self)
-						QueueRemove(OutsideBounds, self)
-					end
-				end
+				end;
 			}
 		end
 	end
@@ -176,6 +173,14 @@ function Library:new(Class)
 				return res
 			end
 		end
+	end
+
+	function Proxy:Emit(...)
+		return EventEmitter:Emit(...)
+	end
+
+	function Proxy:Handle(...)
+		return EventEmitter:handle(...)
 	end
 
 	function Proxy:Remove()
