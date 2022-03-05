@@ -66,7 +66,12 @@ function Library:new(Class)
 	local Drawable = Drawing.new(Class)
 
 	local SetIndexes = {}
-	local Object, ObjectMetatable = {}, {}
+	local Object, ObjectMetatable = {
+		LeftEdge = 0;
+		RightEdge = 0;
+		TopEdge = 0;
+		BottomEdge = 0;
+	}, {}
 
 	function ObjectMetatable:__newindex(...)
 		local Index = ...
