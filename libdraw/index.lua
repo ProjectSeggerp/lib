@@ -121,6 +121,7 @@ function Library:new(Class)
 					local Size = self.Size
 					if self.Class ~= 'Line' then
 						local UpperLeftCorner = Value
+						print(Value, Size)
 						local UpperRightCorner = Vector(Value.X + Size.X)
 						local BottomLeftCorner = Value - Vector(0, Size.Y)
 						local BottomRightCorner = UpperRightCorner - Vector(0, Size.Y)
