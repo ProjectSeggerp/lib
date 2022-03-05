@@ -142,26 +142,8 @@ function Library:new(Class)
 	end
 
 	function ProxyMetatable:__index(Index)
-		if Object[Index] ~= nil then
-			return switch(Index) {
-				Position = function()
-					if Proxy.Class == 'Line' then
-						return Proxy.From
-					else
-						return Proxy.Position
-					end
-				end;
-				Size = function()
-					if Proxy.Class == 'Text' then
-						return Proxy.TextBounds
-					else
-						return Proxy.Size
-					end
-				end;
-				default = function()
-					return Object[Index]
-				end
-			}
+		if find(Properties, Index) == nil then
+			return Object[Index]
 		else
 			local err, res = pcall(
 				function()
