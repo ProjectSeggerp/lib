@@ -118,7 +118,7 @@ function Library:new(Class)
 					end
 				end;
 				Position = function()
-					local Size = self.Size
+					local Size = Proxy.Class ~= 'Text' and self.Size or self.TextBounds
 					if self.Class ~= 'Line' then
 						local UpperLeftCorner = Value
 						print(Value, Size)
