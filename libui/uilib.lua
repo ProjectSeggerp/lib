@@ -169,8 +169,8 @@ function Library:CreateWindow(WindowName)
 	Window.Drawables.WindowTitle.Text = Window.Name
 	Window.Drawables.WindowTitle.Color = Theme.Text.Default
 	Window.Drawables.WindowTitle.Font = Theme.Font;
-	Window.Drawables.WindowTitle.Outline = true
-	Window.Drawables.WindowTitle.OutlineColor = Theme.Text.Outline
+	--Window.Drawables.WindowTitle.Outline = true
+	--Window.Drawables.WindowTitle.OutlineColor = Theme.Text.Outline
 	Window.Drawables.WindowTitle.Size = 13
 
 	Window.Drawables.WindowTitle.Position = Vector(
