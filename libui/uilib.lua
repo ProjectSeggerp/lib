@@ -18,7 +18,7 @@ local Library = {
 	Drawables = {};
 	Sizes = nil;
 	Mouse = nil;
-	PositionReference = ViewportSize / 2
+	PositionReference = TransformVector(ViewportSize / 2, math.floor)
 }
 
 Library.Sizes = {
@@ -28,7 +28,7 @@ Library.Sizes = {
 	);
 }
 
-Library.PositionReference -= TransformVector(Library.Sizes.Window / 2, math.floor)
+Library.PositionReference -= Library.Sizes.Window / 2
 
 local _ = Library.Sizes
 
@@ -44,8 +44,8 @@ _.WindowTitleSquare = Vector(
 _.BorderOffset = 4
 
 _.TabButton = Vector(
-	20,
-	20
+	36,
+	36
 )
 
 _.TablistOffset = 3
@@ -97,6 +97,10 @@ local ZIndex = {
 	UITitleSquare = 102;
 	UITitleLabel = 103;
 	BodyDelimiter = 103;
+
+	TabsBackground = 104;
+	TabBackground = 105;
+	TabIcon = 106;
 
 
 	MousePointer = 2 ^ 31 - 1;
@@ -197,11 +201,26 @@ function Library:CreateWindow(WindowName)
 	Window.Drawables.BodyBackground.Size = Library.Sizes.Body
 	Window.Drawables.BodyBackground.ZIndex = ZIndex.UIFrameBackground
 
+	Window.Drawables.TabsBackground = libdraw'Square'
+	Window.Drawables.TabsBackground.Filled = true
+
+	Window.Drawables.TabsBackground.Color = Theme.Background.PartlyLight
+	Window.Drawables.TabsBackground.Position = Vector(
+		Window.Drawables.BodyBackground.Position.X + Library.Sizes.BorderOffset,
+		Window.Drawables.BodyBackground.Position.Y + Library.Sizes.BorderOffset
+	)
+	Window.Drawables.TabsBackground.Size = Vector(
+		Library.Sizes.TabButton.X + Library.Sizes.TablistOffset * 2,
+		Window.Drawables.BodyBackground.Size.Y - Library.Sizes.BorderOffset * 2
+	)
+	Window.Drawables.TabsBackground.ZIndex = ZIndex.TabsBackground
+
 	Window.Drawables.PrimaryWindowRing.Visible = true
 	Window.Drawables.TitleSquare.Visible = true
 	Window.Drawables.WindowBodyLine.Visible = true
 	Window.Drawables.WindowTitle.Visible = true
 	Window.Drawables.BodyBackground.Visible = true
+	Window.Drawables.TabsBackground.Visible = true
 
 	return Window
 end
