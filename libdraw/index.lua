@@ -103,6 +103,7 @@ function Library:new(Class)
 			local err, res = pcall(
 				function()
 					Drawable[Index] = Value
+					print(Class, Index, Value)
 				end
 			)
 			if err == false then
@@ -118,23 +119,23 @@ function Library:new(Class)
 					end
 				end;
 				Position = function()
-					local Size = Proxy.Class ~= 'Text' and self.Size or self.TextBounds
-					if self.Class ~= 'Line' then
+					local Size = Proxy.Class ~= 'Text' and Proxy.Size or Proxy.TextBounds
+					if Proxy.Class ~= 'Line' then
 						local UpperLeftCorner = Value
 						print(Value, Size)
 						local UpperRightCorner = Vector(Value.X + Size.X)
 						local BottomLeftCorner = Value - Vector(0, Size.Y)
 						local BottomRightCorner = UpperRightCorner - Vector(0, Size.Y)
-						self.UpperLeftCorner = UpperLeftCorner
-						self.BottomLeftCorner = BottomLeftCorner
-						self.UpperRightCorner = UpperRightCorner
-						self.BottomRightCorner = BottomRightCorner
+						Proxy.UpperLeftCorner = UpperLeftCorner
+						Proxy.BottomLeftCorner = BottomLeftCorner
+						Proxy.UpperRightCorner = UpperRightCorner
+						Proxy.BottomRightCorner = BottomRightCorner
 
 						local XPosition, YPosition = Value.X, Value.Y
-						self.LeftEdge = XPosition
-						self.RightEdge = XPosition + Size.X
-						self.TopEdge = YPosition
-						self.BottomEdge = YPosition + Size.Y
+						Proxy.LeftEdge = XPosition
+						Proxy.RightEdge = XPosition + Size.X
+						Proxy.TopEdge = YPosition
+						Proxy.BottomEdge = YPosition + Size.Y
 					end
 				end;
 			}
