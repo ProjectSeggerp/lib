@@ -95,6 +95,8 @@ local ZIndex = {
 	UIFrameBackground = 100;
 	UIFrameRing = 101;
 	UITitleSquare = 102;
+	UITitleLabel = 103;
+	BodyDelimiter = 103;
 
 
 	MousePointer = 2 ^ 31 - 1;
@@ -149,6 +151,7 @@ function Library:CreateWindow(WindowName)
 	Window.Drawables.TitleSquare.Color = Theme.Background.Dark
 	Window.Drawables.TitleSquare.Position = Library.PositionReference
 	Window.Drawables.TitleSquare.Size = Library.Sizes.WindowTitleSquare
+	Window.Drawables.TitleSquare.ZIndex = ZIndex.UITitleSquare
 
 	Window.Drawables.WindowBodyLine = libdraw'Line'
 
@@ -163,6 +166,7 @@ function Library:CreateWindow(WindowName)
 		Library.PositionReference.X + Library.Sizes.Window.X,
 		BaseYValue
 	)
+	Window.Drawables.WindowBodyLine.ZIndex = ZIndex.BodyDelimiter
 
 	Window.Drawables.WindowTitle = libdraw'Text'
 
@@ -170,16 +174,34 @@ function Library:CreateWindow(WindowName)
 	Window.Drawables.WindowTitle.Color = Theme.Text.Default
 	Window.Drawables.WindowTitle.Font = Theme.Font;
 	Window.Drawables.WindowTitle.Size = 13
+	Window.Drawables.WindowTitle.ZIndex = ZIndex.UITitleLabel
 
 	Window.Drawables.WindowTitle.Position = Vector(
 		Window.Drawables.TitleSquare.Position.X + Library.Sizes.BorderOffset,
-		Window.Drawables.TitleSquare.Position.Y / 2
+		Window.Drawables.TitleSquare.Position.Y + Window.Drawables.TitleSquare.Size.Y / 2
 	)
+
+	Window.Drawables.WindowTitle.Position -= Vector(
+		0,
+		Window.Drawables.WindowTitle.TextBounds.Y / 2
+	)
+
+	Window.Drawables.BodyBackground = libdraw'Square'
+	Window.Drawables.BodyBackground.Filled = true
+
+	Window.Drawables.BodyBackground.Color = Theme.Background.Dark
+	Window.Drawables.BodyBackground.Position = Vector(
+		Library.PositionReference.X + Library.Sizes.OutsiderOutlineThickness,
+		Library.PositionReference.Y + Library.Sizes.WindowTitleSquare.Y + Library.Sizes.WindowBodyLineThickness
+	)
+	Window.Drawables.BodyBackground.Size = Library.Sizes.Body
+	Window.Drawables.BodyBackground.ZIndex = ZIndex.UIFrameBackground
 
 	Window.Drawables.PrimaryWindowRing.Visible = true
 	Window.Drawables.TitleSquare.Visible = true
 	Window.Drawables.WindowBodyLine.Visible = true
 	Window.Drawables.WindowTitle.Visible = true
+	Window.Drawables.BodyBackground.Visible = true
 
 	return Window
 end
