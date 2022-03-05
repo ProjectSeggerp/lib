@@ -73,9 +73,7 @@ local Theme = {
 	Font = Drawing.Fonts.Plex;
 }
 
-loadstring(game:HttpGet'https://github.com/PysephWasntAvailable/DrawingElement/blob/main/Source/Loader.lua', '@AnomicX-libdraw')()
-
-local libdraw = DrawingElement.new
+local libdraw = Drawing.new
 
 -- baxo's
 local function switch(toCompare)
