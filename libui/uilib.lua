@@ -119,7 +119,9 @@ function Library:CreateWindow(WindowName)
 				}
 				rawset(Window, Index, Value)
 				return switch(Index) {
-					
+					Visible = function()
+						-- implement
+					end
 				}
 			end
 		}
