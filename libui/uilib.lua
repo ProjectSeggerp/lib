@@ -73,8 +73,9 @@ local Theme = {
 	Font = Drawing.Fonts.Plex;
 }
 
---local libdraw = import'libdraw'
-local libdraw = import'libdraw'
+loadstring(game:HttpGet'https://github.com/PysephWasntAvailable/DrawingElement/blob/main/Source/Loader.lua', '@AnomicX-libdraw')()
+
+local libdraw = DrawingElement.new
 
 -- baxo's
 local function switch(toCompare)
