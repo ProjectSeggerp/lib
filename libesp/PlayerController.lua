@@ -262,13 +262,14 @@ function Controller:UpdateOperation()
 end
 
 return setmetatable(
-	Controller,
+	{},
 	{
+		__index = Controller;
 		__newindex = function(...)
-			local self, idx, val = ...
+			local self, idx, val = unpack{Controller, select(2, ...)}
 			if idx == 'Enabled' then
 				if val == false then
-					rawset(...)
+					rawset(self, idx, val)
 					RunService.RenderStepped:Wait()
 					foreach(Controller.Objects, function(_, DrawingObjects)
 						local Name, Box, Tracer=	DrawingObjects.Name,
@@ -279,7 +280,7 @@ return setmetatable(
 					end)
 				end
 			else
-				return rawset(...)
+				return rawset(self, idx, val)
 			end
 		end;
 		__tostring = 'PlayerController';
