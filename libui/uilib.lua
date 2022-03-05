@@ -69,7 +69,8 @@ local Theme = {
 		PartlyDark = rgb(59, 66, 82);
 		PartlyLight = rgb(67, 76, 94);
 		Light = rgb(76, 86, 106);
-	}
+	};
+	Font = Drawing.Fonts.Plex;
 }
 
 local libdraw = import'libdraw'
@@ -163,9 +164,24 @@ function Library:CreateWindow(WindowName)
 		BaseYValue
 	)
 
+	Window.Drawables.WindowTitle = libdraw'Text'
+
+	Window.Drawables.WindowTitle.Text = Window.Name
+	Window.Drawables.WindowTitle.Color = Theme.Text.Default
+	Window.Drawables.WindowTitle.Font = Theme.Font;
+	Window.Drawables.WindowTitle.Outline = Theme.Text.Outline
+	Window.Drawables.WindowTitle.Size = 13
+
+	Window.Drawables.WindowTitle.Position = Vector(
+		Window.Drawables.TitleSquare.Position.X + Library.Sizes.BorderOffset,
+		Window.Drawables.TitleSquare.Position.Y / 2 - Window.Drawables.TitleSquare.TextBounds.Y / 2
+	)
+
 	Window.Drawables.PrimaryWindowRing.Visible = true
 	Window.Drawables.TitleSquare.Visible = true
 	Window.Drawables.WindowBodyLine.Visible = true
+	Window.Drawables.WindowTitle.Visible = true
+
 	return Window
 end
 
