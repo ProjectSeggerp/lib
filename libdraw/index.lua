@@ -99,6 +99,7 @@ function Library:new(Class)
 	function ProxyMetatable:__newindex(Index, Value)
 		if find(Properties, Index) == nil then
 			Object[Index] = Value
+			print('Set', Index, Value)
 		else
 			local err, res = pcall(
 				function()
