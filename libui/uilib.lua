@@ -37,7 +37,7 @@ _.OutsiderOutlineThickness = 2
 _.WindowBodyLineThickness = 3
 
 _.WindowTitleSquare = Vector(
-	Library.Sizes.Window.X - Library.Sizes.OutsiderOutlineThickness * 2,
+	Library.Sizes.Window.X,
 	35
 )
 
@@ -73,7 +73,10 @@ local Theme = {
 	Font = Drawing.Fonts.Plex;
 }
 
-local libdraw = import'libdraw'
+--local libdraw = import'libdraw'
+loadstring(game:HttpGet'https://raw.githubusercontent.com/PysephWasntAvailable/DrawingExtension/main/Source.lua', '@AnomicX-libdraw')()
+
+local libdraw = Drawing.new
 
 -- baxo's
 local function switch(toCompare)
