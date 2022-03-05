@@ -135,8 +135,8 @@ function Library:CreateWindow(WindowName)
 		Library.PositionReference.Y + Library.Sizes.WindowTitleSquare.Y + Library.Sizes.WindowBodyLineThickness
 	)
 	Window.Drawables.PrimaryWindowRing.Size = Vector(
-		Library.Window.Size.X,
-		Library.Window.Size.Y - (Library.Sizes.WindowTitleSquare.Y + Library.Sizes.WindowBodyLineThickness)
+		Library.Sizes.Window.X,
+		Library.Sizes.Window.Y - (Library.Sizes.WindowTitleSquare.Y + Library.Sizes.WindowBodyLineThickness)
 	)
 
 	Window.Drawables.PrimaryWindowRing.Visible = true
