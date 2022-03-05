@@ -74,9 +74,7 @@ local Theme = {
 }
 
 --local libdraw = import'libdraw'
-loadstring(game:HttpGet'https://raw.githubusercontent.com/PysephWasntAvailable/DrawingExtension/main/Source.lua', '@AnomicX-libdraw')()
-
-local libdraw = Drawing.new
+local libdraw = import'libdraw'
 
 -- baxo's
 local function switch(toCompare)
