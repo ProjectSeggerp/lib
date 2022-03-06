@@ -473,7 +473,7 @@ function Library:CreateWindow(WindowName)
 				}
 			)
 
-			Selector.Label.Text = string.format('  %s <%d>', Selector.Identifier, Selector.Value)
+			Selector.Label.Text = string.format('  %s <%.2f>', Selector.Identifier, Selector.Value)
 
 			Selector.Callback(Selector.Value)
 
@@ -486,16 +486,18 @@ function Library:CreateWindow(WindowName)
 			function Selector:Advance()
 				Selector.Value = math.clamp(Selector.Value + Selector.Precision, Minimum, Maximum)
 				Selector.Callback(Selector.Value)
+				print('Selector:Advance', Selector.Callback)
 			end
 
 			function Selector:Back()
 				Selector.Value = math.clamp(Selector.Value - Selector.Precision, Minimum, Maximum)
 				Selector.Callback(Selector.Value)
+				print('Selector:Back', Selector.Callback)
 			end
 
 			function Selector:Render()
 				Selector.Label.Text = string.format(
-					'  %s <%d>%s',
+					'  %s <%.2f>%s',
 					Selector.Identifier,
 					tostring(Selector.Value),
 					Selector.Selected  and ' <' or ''
@@ -892,8 +894,10 @@ function Library:CreateWindow(WindowName)
 
 		if typeof(Element) == 'Selector' then
 			Element:Back()
+			print('Selector.Value', Element.Value)
 		elseif typeof(Element) == 'List' then
 			Element:Previous()
+			print('List.Value', Element.Value)
 		end
 	end
 
@@ -904,12 +908,12 @@ function Library:CreateWindow(WindowName)
 		end
 		local Element = Section.SelectedElement
 
-		print(typeof(Element))
-
 		if typeof(Element) == 'Selector' then
 			Element:Advance()
+			print('Selector.Value', Element.Value)
 		elseif typeof(Element) == 'List' then
 			Element:Next()
+			print('List.Value', Element.Value)
 		end
 	end
 
@@ -920,12 +924,11 @@ function Library:CreateWindow(WindowName)
 		end
 		local Element = Section.SelectedElement
 
-		print(typeof(Element))
-
 		if typeof(Element) == 'Button' or typeof(Element) == 'Keybind' then
 			Element:Activate()
 		elseif typeof(Element) == 'Toggle' then
 			Element.Value = not Element.Value
+			Element.Callback(Element.Value)
 		end
 	end
 
