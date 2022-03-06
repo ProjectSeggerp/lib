@@ -450,7 +450,6 @@ function Library:CreateWindow(WindowName)
 							end;
 							Value = function()
 								rawset(InternalSelector, Index, Value)
-								Callback(Value)
 								Selector:Render()
 							end;
 							Selected = function()
@@ -473,7 +472,7 @@ function Library:CreateWindow(WindowName)
 				}
 			)
 
-			Selector.Label.Text = string.format('  %s <%.2f>', Selector.Identifier, Selector.Value)
+			Selector.Label.Text = string.format('  %s <%s>', Selector.Identifier, tostring(Selector.Value))
 
 			Selector.Callback(Selector.Value)
 
@@ -497,10 +496,10 @@ function Library:CreateWindow(WindowName)
 
 			function Selector:Render()
 				Selector.Label.Text = string.format(
-					'  %s <%.2f>%s',
+					'  %s <%s>%s',
 					Selector.Identifier,
 					tostring(Selector.Value),
-					Selector.Selected  and ' <' or ''
+					Selector.Selected and ' <' or ''
 				)
 			end
 
@@ -543,7 +542,6 @@ function Library:CreateWindow(WindowName)
 							end;
 							Value = function()
 								rawset(InternalToggle, Index, Value)
-								Callback(Value)
 								Toggle:Render()
 							end;
 							Selected = function()
@@ -568,7 +566,6 @@ function Library:CreateWindow(WindowName)
 
 			Toggle.Label.Text = string.format('  %s <%s>', Toggle.Identifier, tostring(Toggle.Value))
 
-			Toggle.Callback(Toggle.Value)
 
 			Section.ElementOffset += Vector2(0, 15)
 
@@ -625,7 +622,6 @@ function Library:CreateWindow(WindowName)
 							end;
 							Value = function()
 								rawset(InternalList, Index, Value)
-								Callback(Value)
 								List:Render()
 							end;
 							Selected = function()
