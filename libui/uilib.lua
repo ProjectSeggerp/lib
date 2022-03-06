@@ -353,7 +353,10 @@ function Library:CreateWindow(WindowName)
 			Visible = false;
 			Drawables = {};
 			Columns = {};
-			ColumnSize = Window.AvaiableColumnSpace - Window.Sizes.BorderOffset * 2
+			ColumnSize = Vector(
+				Window.AvaiableColumnSpace.X - Window.Sizes.BorderOffset * 2,
+				Window.AvaiableColumnSpace.Y
+			)
 		}
 
 		Tab = setmetatable(
