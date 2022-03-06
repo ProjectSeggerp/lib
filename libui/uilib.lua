@@ -359,7 +359,7 @@ function Library:CreateWindow(WindowName)
 			Tab:Render()
 			Window.TabButtonPositionReference += Vector(
 				0,
-				Window.Sizes.TabButton.Y + Window.Size.BorderOffset
+				Window.Sizes.TabButton.Y + Window.Sizes.BorderOffset
 			)
 		end
 
