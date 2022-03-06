@@ -126,6 +126,9 @@ function Library:new(Class)
 			end
 			return switch(Index) {
 				Visible = function()
+					if Proxy.Class == 'Line' then
+						return
+					end
 					if Value then
 						QueueInsert(OutsideBounds, self)
 					else

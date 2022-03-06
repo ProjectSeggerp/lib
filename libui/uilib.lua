@@ -131,6 +131,10 @@ local ZIndex = {
 	SectorOutlines = 103;
 	SectorTitle = 105;
 
+	BaseComponent = 150;
+	-- JIT values.
+	CeilingComponent = 300;
+
 
 	MousePointer = 2 ^ 31 - 1;
 }
@@ -279,11 +283,11 @@ function Library:CreateWindow(WindowName)
 		Window.Drawables.PrimaryWindowRing.Thickness = Window.Sizes.OutsiderOutlineThickness
 		Window.Drawables.PrimaryWindowRing.Position = Vector(
 			Window.Position.X,
-			Window.Position.Y + Window.Sizes.WindowTitleSquare.Y + Window.Sizes.WindowBodyLineThickness
+			Window.Position.Y + Window.Sizes.WindowTitleSquare.Y + Window.Sizes.WindowBodyLineThickness - 1
 		)
 		Window.Drawables.PrimaryWindowRing.Size = Vector(
 			Window.Size.X,
-			Window.Size.Y - (Window.Sizes.WindowTitleSquare.Y + Window.Sizes.WindowBodyLineThickness)
+			Window.Size.Y - (Window.Sizes.WindowTitleSquare.Y + Window.Sizes.WindowBodyLineThickness - 1)
 		)
 		Window.Drawables.PrimaryWindowRing.ZIndex = ZIndex.UIFrameRing
 
@@ -348,8 +352,15 @@ function Library:CreateWindow(WindowName)
 			Window.Drawables.TabsBackground.Position.Y
 		)
 
+		Window.TabButtonPositionReference = Window.Drawables.BodyBackground.Position + Vector(Window.Sizes.BorderOffset, Window.Sizes.BorderOffset)
+
 		for _, Tab in next, Window.Tabs do
+			Tab.PositionReference = Window.TabButtonPositionReference
 			Tab:Render()
+			Window.TabButtonPositionReference += Vector(
+				0,
+				Window.Sizes.TabButton.Y + Window.Size.BorderOffset
+			)
 		end
 
 		return Window
@@ -381,7 +392,6 @@ function Library:CreateWindow(WindowName)
 
 					return switch(Index) {
 						Selected = function()
-							Tab.Drawables.Title.Color = Value and Theme.Text.Default or Theme.Text.Disabled
 							Tab.Drawables.Background.Color = Value and Theme.Background.PartlyDark or Theme.Background.Dark
 							for _, Column in next, Tab.Columns do
 								print('Column', Column)
@@ -403,26 +413,23 @@ function Library:CreateWindow(WindowName)
 		function Tab:Render()
 			Tab.Drawables.Background.Color = Theme.Background.Dark
 			Tab.Drawables.Background.Filled = true
-			Tab.Drawables.Background.Position = Vector(
-				Window.Drawables.TabsBackground.Position.X + Window.Sizes.TablistOffset,
-				Window.Drawables.TabsBackground.Position.Y + (Window.Sizes.TabButton.Y + Window.Sizes.TablistOffset) * Tab.Index - 1
-			)
+			Tab.Drawables.Background.Position = Tab.PositionReference
 			Tab.Drawables.Background.Size = Window.Sizes.TabButton
 			Tab.Drawables.Background.ZIndex = ZIndex.TabBackground
 
 			Tab.Drawables.Title.Text = Tab.Title
-			Tab.Drawables.Title.Color = Tab.Selected and Theme.Text.Default or Theme.Text.Disabled
+			Tab.Drawables.Title.Color = Theme.Text.Default
 			Tab.Drawables.Title.Center = true
 			Tab.Drawables.Title.Position = Tab.Drawables.Background.Position + Tab.Drawables.Background.Size / 2
 			Tab.Drawables.Title.ZIndex = ZIndex.TabTitle
 			Tab.Drawables.Title.Position -= Vector(0, Tab.Drawables.Title.TextBounds.Y)
 
-			local _ = Vector(
-				Window.Sizes.Body.X - (Window.Sizes.TabsBackground.X + Window.Sizes.BorderOffset * ((#Tab.Columns - 1) + 2)),
-				Window.Sizes.Body.Y - Window.Sizes.BorderOffset * 2
-			)
+			local _ = Window.Sizes.Body.X - (Window.Sizes.TabsBackground.X + (Window.Sizes.BorderOffset * #Tab.Columns - 1))
 
-			Tab.ColumnSize = _ / Vector(#Tab.Columns, 1)
+			Tab.ColumnSize = Vector(
+				(_ - Window.Sizes.BorderOffset * 2) / #Tab.Columns,
+				Tab.Drawables.Background.Size.Y - Window.Sizes.BorderOffset * 2
+			)
 
 			local PositionReference = Window.ColumnPositionReference
 
@@ -509,6 +516,8 @@ function Library:CreateWindow(WindowName)
 						Tab.ColumnSize.X,
 						2 * Window.Sizes.BorderOffset
 					)
+					Sector.Drawables.Background.Filled = true
+					Sector.Drawables.Background.ZIndex = ZIndex.SectorBackground
 
 					for Index = 1, #Sector.Components do
 						Sector.Drawables.Background.Size += Vector(0, Sector.Components[Index].Bounds.Y)
@@ -595,6 +604,7 @@ function Library:CreateWindow(WindowName)
 						Label.Drawables.Text.Position = Label.PositionReference
 						Label.Drawables.Text.Size = Theme.TextSize
 						Label.Drawables.Text.Font = Theme.Font
+						Label.Drawables.Text.ZIndex = ZIndex.BaseComponent
 
 						Label.Text = Text
 
@@ -633,12 +643,16 @@ function Library:CreateWindow(WindowName)
 
 			insert(Tab.Columns, Column)
 
+			Tab:Render()
+
 			return Column:Render()
 		end
 
 		insert(Window.Tabs, Tab)
 
 		Tab.Index = #Window.Tabs
+
+		Window:Render()
 
 		return Tab:Render()
 	end
