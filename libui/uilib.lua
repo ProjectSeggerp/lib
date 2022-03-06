@@ -46,15 +46,22 @@ _.WindowTitleSquare = Vector(
 _.BorderOffset = 4
 
 _.TabButton = Vector(
-	36,
+	200,
 	36
 )
 
 _.TablistOffset = 3
 
+_.ComponentSeparation = 3
+
 _.Body = Vector(
 	_.Window.X,
 	_.Window.Y - (_.WindowTitleSquare.Y + _.WindowBodyLineThickness)
+)
+
+_.TabsBackground = Vector(
+	_.TabButton.X + _.TablistOffset * 2,
+	_.Body.Y - _.BorderOffset * 2
 )
 
 _.Column = Vector(
@@ -116,7 +123,7 @@ local ZIndex = {
 
 	TabsBackground = 104;
 	TabBackground = 105;
-	TabIcon = 106;
+	TabTitle = 106;
 
 	SectorBackground = 104;
 	SectorOutlines = 103;
@@ -222,6 +229,11 @@ function Library:CreateWindow(WindowName)
 							35
 						)
 
+						Window.Sizes.TabsBackground = Vector(
+							Window.Sizes.TabButton.X + Window.Sizes.TablistOffset * 2,
+							Window.Sizes.Body.Y - Window.Sizes.BorderOffset * 2
+						)
+
 						Window:Render()
 					end;
 					Position = function()
@@ -318,23 +330,15 @@ function Library:CreateWindow(WindowName)
 
 		Window.Drawables.TabsBackground.Color = Theme.Background.PartlyLight
 		Window.Drawables.TabsBackground.Position = Vector(
-			Window.Drawables.BodyBackground.Position.X + Window.Sizes.BorderOffset,
-			Window.Drawables.BodyBackground.Position.Y + Window.Sizes.BorderOffset
+			Window.Drawables.BodyBackground.Position.X,
+			Window.Drawables.BodyBackground.Position.Y
 		)
-		Window.Drawables.TabsBackground.Size = Vector(
-			Window.Sizes.TabButton.X + Window.Sizes.TablistOffset * 2,
-			Window.Drawables.BodyBackground.Size.Y - Window.Sizes.BorderOffset * 2
-		)
+		Window.Drawables.TabsBackground.Size = Window.Sizes.TabsBackground
 		Window.Drawables.TabsBackground.ZIndex = ZIndex.TabsBackground
 
 		Window.ColumnPositionReference = Vector(
 			Window.Drawables.TabsBackground.Position.X + Window.Drawables.TabsBackground.Size.X,
 			Window.Drawables.TabsBackground.Position.Y
-		)
-
-		Window.AvaiableColumnSpace = Vector(
-			Window.Sizes.Body.X - (Window.Drawables.TabsBackground.Size.X + Window.Sizes.BorderOffset),
-			Window.Drawables.TabsBackground.Size.Y
 		)
 
 		for _, Tab in next, Window.Tabs do
@@ -344,10 +348,10 @@ function Library:CreateWindow(WindowName)
 		return Window
 	end
 
-	function Window:CreateTab(Icon, Description)
+	function Window:CreateTab(Title, Description)
 		local Tab, ITab
 		ITab = {
-			Icon = Icon;
+			Title = Title;
 			Description = Description;
 			Selected = false;
 			Visible = false;
@@ -370,14 +374,15 @@ function Library:CreateWindow(WindowName)
 
 					return switch(Index) {
 						Selected = function()
-							Tab.Drawables.Icon.Visible = Value
-							Tab.Drawables.Background = Value and Theme.Background.PartlyDark or Theme.Background.Dark
+							Tab.Drawables.Title.Color = Value and Theme.Text.Default or Theme.Text.Disabled
+							Tab.Drawables.Background.Color = Value and Theme.Background.PartlyDark or Theme.Background.Dark
 							for _, Column in next, Tab.Columns do
 								Column.Visible = Value
 							end
 						end;
 						Visible = function()
 							Tab.Drawables.Background.Visible = Value
+							Tab.Drawables.Title.Visible = Value
 						end
 					}
 				end
@@ -385,22 +390,38 @@ function Library:CreateWindow(WindowName)
 		)
 
 		Tab.Drawables.Background = libdraw'Square'
-		Tab.Drawables.Icon = libdraw'Image'
+		Tab.Drawables.Title = libdraw'Text'
+
+		function Tab:CalculateColumnBounds()
+
+		end
 
 		function Tab:Render()
 			Tab.Drawables.Background.Color = Theme.Background.Dark
 			Tab.Drawables.Background.Filled = true
 			Tab.Drawables.Background.Position = Vector(
 				Window.Drawables.TabsBackground.Position.X + Window.Sizes.TablistOffset,
-				Window.Drawables.TabsBackground.Position.Y + (Window.Sizes.TabButton.Y + Window.Sizes.TablistOffset) * #Window.Tabs + 1
+				Window.Drawables.TabsBackground.Position.Y + (Window.Sizes.TabButton.Y + Window.Sizes.TablistOffset) * Tab.Index
 			)
 			Tab.Drawables.Background.Size = Window.Sizes.TabButton
 			Tab.Drawables.Background.ZIndex = ZIndex.TabBackground
 
-			Tab.Drawables.Icon.Data = Tab.Icon
-			Tab.Drawables.Icon.Size = Tab.Drawables.Background.Size - Vector(1, 1)
-			Tab.Drawables.Icon.Position = Tab.Drawables.Background.Position + Vector(1, 1)
-			Tab.Drawables.Icon.ZIndex = ZIndex.TabIcon
+			Tab.Drawables.Title.Text = Tab.Title
+			Tab.Drawables.Title.Color = Tab.Selected and Theme.Text.Default or Theme.Text.Disabled
+			Tab.Drawables.Title.Center = true
+			Tab.Drawables.Title.Position = Tab.Drawables.Background.Position + Tab.Drawables.Background.Size / 2
+			Tab.Drawables.Title.ZIndex = ZIndex.TabTitle
+
+			local _ = Vector(
+				Window.Sizes.Body.X - (Window.Sizes.TabsBackground.X + Window.Sizes.BorderOffset * ((#Tab.Columns - 1) + 2)),
+				Window.Sizes.Body.Y - Window.Sizes.BorderOffset * 2
+			)
+
+			Tab.ColumnSize = _ / Vector(#Tab.Columns, 1)
+
+			for Index = 1, #Tab.Columns do
+				Tab.Columns[Index]:Render()
+			end
 
 			return Tab
 		end
@@ -411,7 +432,7 @@ function Library:CreateWindow(WindowName)
 			IColumn = {
 				Visible = false;
 				Sectors = {};
-				PositionReference = Vector(Window.Drawables.TabsBackground.Position.X + Window.Drawables.TabsBackground.Size.X + (Window.Sizes.BorderOffset + Window.Sizes.Column.X) * (#Tab.Columns + 1), Window.Drawables.TabsBackground.Position.Y)
+				PositionReference = Vector();
 			}
 			Column = setmetatable(
 				{},
@@ -437,7 +458,6 @@ function Library:CreateWindow(WindowName)
 					Components = {};
 					Drawables = {};
 					Visible = false;
-					PositionReference = Column.PositionReference
 				}
 				Sector = setmetatable(
 					{},
@@ -474,7 +494,7 @@ function Library:CreateWindow(WindowName)
 
 				function Sector:Render()
 					Sector.Drawables.Background.Position = Sector.PositionReference
-					Sector.Drawables.Background.Color = Theme.Background.PartlyDark
+					Sector.Drawables.Background.Color = Theme.Background.Dark
 					Sector.Drawables.Background.Size = Vector(
 						Tab.ColumnSize.X,
 						2 * Window.Sizes.BorderOffset
@@ -490,6 +510,7 @@ function Library:CreateWindow(WindowName)
 					Sector.Drawables.Label.Center = true
 					Sector.Drawables.Label.Position = Vector(Sector.Drawables.Background.Position.X + Sector.Drawables.Background.Size.X / 2, Sector.Drawables.Background.Position.Y)
 					Sector.Drawables.Label.ZIndex = ZIndex.SectorTitle
+					Sector.Drawables.Label.Color = Theme.Text.Default
 
 
 					local ComponentPositionReference = Sector.PositionReference + Vector(
@@ -547,6 +568,7 @@ function Library:CreateWindow(WindowName)
 								return switch(Index) {
 									Text = function()
 										Label.Drawables.Text.Text = Value
+										TransformText(Label.Drawables.Text, Tab.ColumnSize)
 									end
 								}
 							end
@@ -570,10 +592,14 @@ function Library:CreateWindow(WindowName)
 
 					insert(ISector.Components, Label)
 
-					return Label
+					Column:Render()
+
+					return Label:Render()
 				end
 
 				insert(Column.Sectors, Sector)
+
+				Column:Render()
 
 				return Sector:Render()
 			end
