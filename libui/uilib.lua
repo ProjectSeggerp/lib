@@ -271,8 +271,8 @@ function Library:CreateWindow(WindowName)
 	Window.Drawables.BodyBackground = libdraw'Square'
 	Window.Drawables.TabsBackground = libdraw'Square'
 
-	workspace.CurrentCamera:GetPropertyChangedSignal'ViewportSize':Connect(function(_)
-		Window.Size = _
+	workspace.CurrentCamera:GetPropertyChangedSignal'ViewportSize':Connect(function()
+		Window.Size = workspace.CurrentCamera.ViewportSize
 	end)
 
 	function Window:Render()
