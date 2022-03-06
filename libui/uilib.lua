@@ -64,6 +64,11 @@ _.TabsBackground = Vector(
 	_.Body.Y - _.BorderOffset * 2
 )
 
+_.AvaiableColumnSpace = Vector(
+	_.Body.X - _.TabsBackground.X,
+	_.Body.Y
+)
+
 _.Column = Vector(
 	_.Body.X - _.BorderOffset * 4 - (_.TablistOffset * 2 + _.TabButton.X),
 	_.Body.Y - _.BorderOffset * 2
@@ -234,6 +239,11 @@ function Library:CreateWindow(WindowName)
 							Window.Sizes.Body.Y - Window.Sizes.BorderOffset * 2
 						)
 
+						Window.Sizes.AvaiableColumnSpace = Vector(
+							Window.Sizes.Body.X - Window.Sizes.TabsBackground.X,
+							Window.Sizes.Body.Y
+						)
+
 						Window:Render()
 					end;
 					Position = function()
@@ -337,7 +347,7 @@ function Library:CreateWindow(WindowName)
 		Window.Drawables.TabsBackground.ZIndex = ZIndex.TabsBackground
 
 		Window.ColumnPositionReference = Vector(
-			Window.Drawables.TabsBackground.Position.X + Window.Drawables.TabsBackground.Size.X,
+			Window.Drawables.TabsBackground.Position.X + Window.Drawables.TabsBackground.Size.X + Window.Sizes.BorderOffset,
 			Window.Drawables.TabsBackground.Position.Y
 		)
 
