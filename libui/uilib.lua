@@ -619,7 +619,7 @@ function Library:CreateWindow(WindowName)
 				local SectorAllocationPosition = Column.PositionReference
 
 				for Index = 1, #Column.Sectors do
-					local Sector = Column.Sectors
+					local Sector = Column.Sectors[Index]
 
 					Sector.PositionReference = SectorAllocationPosition
 
