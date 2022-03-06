@@ -333,7 +333,7 @@ function Library:CreateWindow(WindowName)
 		)
 
 		Window.AvaiableColumnSpace = Vector(
-			Window.Sizes.Body - (Window.Drawables.TabsBackground.Size.X + Window.Sizes.BorderOffset),
+			Window.Sizes.Body.X - (Window.Drawables.TabsBackground.Size.X + Window.Sizes.BorderOffset),
 			Window.Drawables.TabsBackground.Size.Y
 		)
 
