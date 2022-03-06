@@ -368,8 +368,8 @@ function Library:CreateWindow(WindowName)
 			Drawables = {};
 			Columns = {};
 			ColumnSize = Vector(
-				Window.AvaiableColumnSpace.X - Window.Sizes.BorderOffset * 2,
-				Window.AvaiableColumnSpace.Y
+				Window.Sizes.AvaiableColumnSpace.X - Window.Sizes.BorderOffset * 2,
+				Window.Sizes.AvaiableColumnSpace.Y
 			);
 			Index = nil;
 		}
@@ -402,10 +402,6 @@ function Library:CreateWindow(WindowName)
 		Tab.Drawables.Background = libdraw'Square'
 		Tab.Drawables.Title = libdraw'Text'
 
-		function Tab:CalculateColumnBounds()
-
-		end
-
 		function Tab:Render()
 			Tab.Drawables.Background.Color = Theme.Background.Dark
 			Tab.Drawables.Background.Filled = true
@@ -429,8 +425,13 @@ function Library:CreateWindow(WindowName)
 
 			Tab.ColumnSize = _ / Vector(#Tab.Columns, 1)
 
+			local PositionReference = Window.ColumnPositionReference
+
 			for Index = 1, #Tab.Columns do
-				Tab.Columns[Index]:Render()
+				local Column = Tab.Columns[Index]
+				Column.PositionReference = PositionReference
+				Column:Render()
+				PositionReference += Vector(Tab.ColumnSize.X + Window.Sizes.BorderOffset, 0)
 			end
 
 			return Tab
