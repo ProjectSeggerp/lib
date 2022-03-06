@@ -356,7 +356,8 @@ function Library:CreateWindow(WindowName)
 			ColumnSize = Vector(
 				Window.AvaiableColumnSpace.X - Window.Sizes.BorderOffset * 2,
 				Window.AvaiableColumnSpace.Y
-			)
+			);
+			Index = nil;
 		}
 
 		Tab = setmetatable(
@@ -444,7 +445,7 @@ function Library:CreateWindow(WindowName)
 						__index = function(_, Index)
 							return switch(Index) {
 								Size = function()
-									
+									return ISector.Drawables.Background.Size
 								end;
 								default = function()
 									return ISector[Index]
@@ -599,6 +600,8 @@ function Library:CreateWindow(WindowName)
 		end
 
 		insert(Window.Tabs, Tab)
+
+		Tab.Index = #Window.Tabs
 
 		return Tab:Render()
 	end
