@@ -450,6 +450,7 @@ function Library:CreateWindow(WindowName)
 							end;
 							Value = function()
 								rawset(InternalSelector, Index, Value)
+								Callback(Value)
 								Selector:Render()
 							end;
 							Selected = function()
@@ -540,6 +541,7 @@ function Library:CreateWindow(WindowName)
 							end;
 							Value = function()
 								rawset(InternalToggle, Index, Value)
+								Callback(Value)
 								Toggle:Render()
 							end;
 							Selected = function()
@@ -621,6 +623,7 @@ function Library:CreateWindow(WindowName)
 							end;
 							Value = function()
 								rawset(InternalList, Index, Value)
+								Callback(Value)
 								List:Render()
 							end;
 							Selected = function()
