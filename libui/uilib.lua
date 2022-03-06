@@ -1,3 +1,40 @@
+---@diagnostic disable: undefined-global
+local PrefferedProtocol = 'https'
+local BaseLibUrl = OverwriteBaseLibUrl or string.format('%s://raw.githubusercontent.com/ProjectSeggerp/lib', PrefferedProtocol)
+-- // Cross exploit support.
+local request = (syn and syn.request) or request
+
+assert(request, 'Exploit not compatible!')
+
+local ImportCache = {}
+
+local function import(...)
+	local ModuleName, RequireOptions = ...
+	if ImportCache[ModuleName] then
+		return ImportCache[ModuleName]
+	end
+
+	if not RequireOptions then RequireOptions = {Branch = 'unauth'} end
+	assert(#ModuleName > 0, 'Empty string received as \'ModuleName\'. It must be larger than zero.')
+	if ModuleName:sub(1, 1) == '/' then
+		ModuleName = ModuleName:sub(2)
+	end
+	local Url = string.format('%s/%s/%s/%s', BaseLibUrl, RequireOptions.Branch or 'master', ModuleName, RequireOptions.InitScript or 'index.lua')
+	local Response = request({
+		Url = Url
+	})
+	assert(Response.StatusCode ~= 404, string.format('Module `%s` was not found.', ModuleName))
+	local Callable, Error = loadstring(Response.Body, string.format('@AnomicX-%s', ModuleName))
+	if not Callable then
+		return error(string.format('Module `%s` could not be compiled;\n %s', ModuleName, Error), 2)
+	end
+	local env = getfenv(Callable)
+	env.import = import
+	local Module = Callable() -- Let lua do its job handling errors this time.
+	ImportCache[ModuleName] = Module
+	return Module
+end
+
 local insert, find, remove = table.insert, table.find, table.remove
 
 local Vector, rgb = Vector2.new, Color3.fromRGB
@@ -40,7 +77,7 @@ _.WindowTitleSquare = Vector(
 	35
 )
 
-_.BorderOffset = 4
+_.BorderOffset = 5
 
 _.TabButton = Vector(
 	200,
@@ -349,7 +386,7 @@ function Library:CreateWindow(WindowName)
 
 		Window.ColumnPositionReference = Vector(
 			Window.Drawables.TabsBackground.Position.X + Window.Drawables.TabsBackground.Size.X + Window.Sizes.BorderOffset,
-			Window.Drawables.TabsBackground.Position.Y
+			Window.Drawables.TabsBackground.Position.Y + Window.Sizes.BorderOffset
 		)
 
 		Window.TabButtonPositionReference = Window.Drawables.BodyBackground.Position + Vector(Window.Sizes.BorderOffset, Window.Sizes.BorderOffset)
@@ -422,8 +459,13 @@ function Library:CreateWindow(WindowName)
 			Tab.Drawables.Title.Center = true
 			Tab.Drawables.Title.Position = Tab.Drawables.Background.Position + Tab.Drawables.Background.Size / 2
 			Tab.Drawables.Title.ZIndex = ZIndex.TabTitle
-			Tab.Drawables.Title.Position -= Vector(0, Tab.Drawables.Title.TextBounds.Y)
+			Tab.Drawables.Title.Position -= Vector(0, Tab.Drawables.Title.TextBounds.Y / 2)
+			Tab.Drawables.Title.Size = 18
 
+			return Tab
+		end
+
+		function Tab:RepositionColumns()
 			local _ = Window.Sizes.Body.X - (Window.Sizes.TabsBackground.X + (Window.Sizes.BorderOffset * #Tab.Columns - 1))
 
 			Tab.ColumnSize = Vector(
@@ -436,11 +478,15 @@ function Library:CreateWindow(WindowName)
 			for Index = 1, #Tab.Columns do
 				local Column = Tab.Columns[Index]
 				Column.PositionReference = PositionReference
-				Column:Render()
+
 				PositionReference += Vector(Tab.ColumnSize.X + Window.Sizes.BorderOffset, 0)
 			end
+		end
 
-			return Tab
+		function Tab:RenderColumns()
+			for _, Column in next, Tab.Columns do
+				Column:Render()
+			end
 		end
 
 
@@ -482,7 +528,7 @@ function Library:CreateWindow(WindowName)
 						__index = function(_, Index)
 							return switch(Index) {
 								Size = function()
-									return ISector.Drawables.Background.Size
+									return ISector.Drawables.Background.Size + Vector(0, ISector.Drawables.Label)
 								end;
 								default = function()
 									return ISector[Index]
@@ -526,11 +572,13 @@ function Library:CreateWindow(WindowName)
 					Sector.Drawables.Background.ZIndex = ZIndex.SectorBackground
 
 					Sector.Drawables.Label.Text = Name
-					Sector.Drawables.Label.Center = true
-					Sector.Drawables.Label.Position = Vector(Sector.Drawables.Background.Position.X + Sector.Drawables.Background.Size.X / 2, Sector.Drawables.Background.Position.Y)
+					Sector.Drawables.Label.Position = Vector(
+						Sector.Drawables.Background.Position.X + Sector.Drawables.Background.Size.X / 2,
+						Sector.Drawables.Background.Position.Y + Sector.Drawables.Label.TextBounds.Y / 2
+					)
 					Sector.Drawables.Label.ZIndex = ZIndex.SectorTitle
 					Sector.Drawables.Label.Color = Theme.Text.Default
-
+					Sector.Drawables.Label.Size = 16
 
 					local ComponentPositionReference = Sector.PositionReference + Vector(
 						Window.Sizes.BorderOffset,
@@ -546,20 +594,6 @@ function Library:CreateWindow(WindowName)
 					return Sector
 				end
 
-
-
-				function Sector:GetArea()
-					local Size = Vector(
-						Window.Sizes.Column.X,
-						2 * Window.Sizes.BorderOffset
-					)
-
-					for Index = 1, #Sector.Components do
-						Size += Vector(0, Sector.Components[Index].Bounds.Y)
-					end
-
-					return Sector.Drawables.Background.Position, Sector.Drawables.Background.Position + Size
-				end
 
 				function Sector:CreateLabel(Text)
 					local Label, ILabel
@@ -613,21 +647,21 @@ function Library:CreateWindow(WindowName)
 
 					insert(ISector.Components, Label)
 
-					Column:Render()
+					Tab:RenderColumns()
 
 					return Label
 				end
 
 				insert(Column.Sectors, Sector)
 
-				Column:Render()
+				Tab:RenderColumns()
 
-				return Sector:Render()
+				return Sector
 			end
 
 			function Column:Render()
+				Tab:RepositionColumns()
 				local SectorAllocationPosition = Column.PositionReference
-
 				for Index = 1, #Column.Sectors do
 					local Sector = Column.Sectors[Index]
 
@@ -643,9 +677,11 @@ function Library:CreateWindow(WindowName)
 
 			insert(Tab.Columns, Column)
 
-			Tab:Render()
 
-			return Column:Render()
+
+			Tab:RenderColumns()
+
+			return Column
 		end
 
 		insert(Window.Tabs, Tab)
@@ -660,5 +696,3 @@ function Library:CreateWindow(WindowName)
 	return Window:Render()
 end
 
-
-return Library

@@ -135,6 +135,13 @@ local HelperFunctions do
 		end
 	end
 
+	function HelperFunctions:SetLabelRangeVisibility(Range, Value)
+		for Index = 1, #Range do
+			local Label = Range[Index]
+			Label.Visible = Value
+		end
+	end
+
 	function HelperFunctions:ProxyTable(T)
 		return setmetatable(
 			{},
@@ -924,22 +931,25 @@ function Library:CreateWindow(WindowName)
 			Section.Title.Visible = State
 			if State and Section.Selected then
 				HelperFunctions:SetElementRangeVisibility(Section.Elements, true)
-				for _ = 1, #Section.Labels do
-					Section.Labels[_].Visible = true
-				end
+				HelperFunctions:SetLabelRangeVisibility(Section.Labels, true)
 			elseif State and Section.Selected == false then
 				HelperFunctions:SetElementRangeVisibility(Section.Elements, false)
+				HelperFunctions:SetLabelRangeVisibility(Section.Labels, false)
 			elseif State == false then
 				HelperFunctions:SetElementRangeVisibility(Section.Elements, false)
-				for _ = 1, #Section.Labels do
-					Section.Labels[_].Visible = true
-				end
+				HelperFunctions:SetLabelRangeVisibility(Section.Labels, false)
 			end
 		end
 		Window.Visible = State
 		if Window.Visible then
 			Window:SetupNavigationControls()
 		else
+			table.foreach(
+				Window.Sections,
+				function(_, Section)
+					HelperFunctions:SetLabelRangeVisibility(Section.Labels, false)
+				end
+			)
 			Window:DisableNavigationControls()
 		end
 	end
