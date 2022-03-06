@@ -58,7 +58,7 @@ _.Body = Vector(
 
 _.TabsBackground = Vector(
 	_.TabButton.X + _.TablistOffset * 2,
-	_.Body.Y - _.BorderOffset * 2
+	_.Body.Y
 )
 
 _.AvaiableColumnSpace = Vector(
@@ -579,7 +579,9 @@ function Library:CreateWindow(WindowName)
 								return switch(Index) {
 									Text = function()
 										Label.Drawables.Text.Text = Value
-										TransformText(Label.Drawables.Text, Tab.ColumnSize)
+									end;
+									Visible = function()
+										Label.Drawables.Text.Visible = Value
 									end
 								}
 							end
