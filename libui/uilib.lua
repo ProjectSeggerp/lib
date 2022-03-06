@@ -559,6 +559,7 @@ function Library:CreateWindow(WindowName)
 						Text = nil;
 						Drawables = {};
 						Visible = false;
+						PositionReference = nil
 					}
 					Label = setmetatable(
 						{},
@@ -590,9 +591,7 @@ function Library:CreateWindow(WindowName)
 
 					function Label:Render()
 						Label.Drawables.Text.Color = Theme.Text.Default
-						Label.Drawables.Text.Position = Vector(
-							Sector.LastComponent.Height
-						)
+						Label.Drawables.Text.Position = Label.PositionReference
 						Label.Drawables.Text.Size = Theme.TextSize
 						Label.Drawables.Text.Font = Theme.Font
 
@@ -605,7 +604,7 @@ function Library:CreateWindow(WindowName)
 
 					Column:Render()
 
-					return Label:Render()
+					return Label
 				end
 
 				insert(Column.Sectors, Sector)
