@@ -17,20 +17,17 @@ end
 
 local Library = {
 	Sizes = nil;
-	PositionReference = Vector();--TransformVector(ViewportSize / 2, math.floor);
+	PositionReference = TransformVector(ViewportSize / 2, math.floor);
 }
 
 Library.Sizes = {
-	Window = ViewportSize;
-	--[[
-		Vector(
-			800,
-			600
-		);
-	]]
+	Window = Vector(
+		800,
+		600
+	);
 }
 
---Library.PositionReference -= Library.Sizes.Window / 2
+Library.PositionReference -= Library.Sizes.Window / 2
 
 local _ = Library.Sizes
 
@@ -387,6 +384,7 @@ function Library:CreateWindow(WindowName)
 							Tab.Drawables.Title.Color = Value and Theme.Text.Default or Theme.Text.Disabled
 							Tab.Drawables.Background.Color = Value and Theme.Background.PartlyDark or Theme.Background.Dark
 							for _, Column in next, Tab.Columns do
+								print('Column', Column)
 								Column.Visible = Value
 							end
 						end;
@@ -407,7 +405,7 @@ function Library:CreateWindow(WindowName)
 			Tab.Drawables.Background.Filled = true
 			Tab.Drawables.Background.Position = Vector(
 				Window.Drawables.TabsBackground.Position.X + Window.Sizes.TablistOffset,
-				Window.Drawables.TabsBackground.Position.Y + (Window.Sizes.TabButton.Y + Window.Sizes.TablistOffset) * Tab.Index
+				Window.Drawables.TabsBackground.Position.Y + (Window.Sizes.TabButton.Y + Window.Sizes.TablistOffset) * Tab.Index - 1
 			)
 			Tab.Drawables.Background.Size = Window.Sizes.TabButton
 			Tab.Drawables.Background.ZIndex = ZIndex.TabBackground
@@ -417,6 +415,7 @@ function Library:CreateWindow(WindowName)
 			Tab.Drawables.Title.Center = true
 			Tab.Drawables.Title.Position = Tab.Drawables.Background.Position + Tab.Drawables.Background.Size / 2
 			Tab.Drawables.Title.ZIndex = ZIndex.TabTitle
+			Tab.Drawables.Title.Position -= Vector(0, Tab.Drawables.Title.TextBounds.Y)
 
 			local _ = Vector(
 				Window.Sizes.Body.X - (Window.Sizes.TabsBackground.X + Window.Sizes.BorderOffset * ((#Tab.Columns - 1) + 2)),
