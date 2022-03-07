@@ -31,6 +31,7 @@ function Library:new()
 		for _ = 1, #Callbacks do
 			insert(Table, Callbacks[_])
 		end
+		self.Events[EventName] = Table
 
 		return self
 	end
