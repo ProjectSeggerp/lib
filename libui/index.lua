@@ -474,8 +474,6 @@ function Library:CreateWindow(WindowName)
 
 			Selector.Label.Text = string.format('  %s <%s>', Selector.Identifier, tostring(Selector.Value))
 
-			Selector.Callback(Selector.Value)
-
 			Section.ElementOffset += Vector2(0, 15)
 
 			function Selector:Highlight(State)
@@ -648,10 +646,6 @@ function Library:CreateWindow(WindowName)
 			)
 
 			List.Label.Text = string.format('  %s <%s>', List.Identifier, tostring(List.Value))
-
-			if List.Value then
-				List.Callback(List.Value)
-			end
 
 			Section.ElementOffset += Vector2(0, 15)
 
