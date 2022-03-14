@@ -983,7 +983,7 @@ function Library:CreateWindow(WindowName)
 					return Enum.ContextActionResult.Sink
 				end,
 				false,
-				Enum.ContextActionPriority.High.Value,
+				Enum.ContextActionPriority.High.Value + 1,
 				unpack(KeyCodes)
 			)
 			insert(Window.Actions, GUID)
