@@ -472,7 +472,7 @@ function Library:CreateWindow(WindowName)
 				}
 			)
 
-			Selector.Label.Text = string.format('  %s <%s>', Selector.Identifier, tostring(Selector.Value))
+			Selector.Label.Text = string.format('  %s <%s>', Selector.Identifier, string.format(Selector.Precision >= 1 and '%d' or '%.1f', Selector.Value))
 
 			Section.ElementOffset += Vector2(0, 15)
 
@@ -496,7 +496,7 @@ function Library:CreateWindow(WindowName)
 				Selector.Label.Text = string.format(
 					'  %s <%s>%s',
 					Selector.Identifier,
-					tostring(Selector.Value),
+					string.format(Selector.Precision >= 1 and '%d' or '%.1f', Selector.Value),
 					Selector.Selected and ' <' or ''
 				)
 			end
@@ -980,7 +980,7 @@ function Library:CreateWindow(WindowName)
 							return Window:NavigateRight()
 						end;
 					}
-					return Enum.ContextActionResult.Sink
+					return Enum.ContextActionResult.Pass
 				end,
 				false,
 				Enum.ContextActionPriority.High.Value,
