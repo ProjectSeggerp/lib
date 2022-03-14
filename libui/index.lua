@@ -953,7 +953,7 @@ function Library:CreateWindow(WindowName)
 	function Window:SetupNavigationControls()
 		for InputClass, KeyCodes in next, Library.NavigationSettings do
 			local GUID = string.lower(HttpService:GenerateGUID(false))
-			ContextActionService:BindCoreActionAtPriority(
+			ContextActionService:BindActionAtPriority(
 				GUID,
 				function(...)
 					local _, UserInputState = ...
@@ -980,7 +980,7 @@ function Library:CreateWindow(WindowName)
 							return Window:NavigateRight()
 						end;
 					}
-					return Enum.ContextActionResult.Pass
+					return Enum.ContextActionResult.Sink
 				end,
 				false,
 				Enum.ContextActionPriority.High.Value,
@@ -992,7 +992,7 @@ function Library:CreateWindow(WindowName)
 
 	function Window:DisableNavigationControls()
 		for _, Identifier in next, Window.Actions do
-			ContextActionService:UnbindCoreAction(Identifier)
+			ContextActionService:UnbindAction(Identifier)
 		end
 		table.clear(Window.Actions)
 	end
