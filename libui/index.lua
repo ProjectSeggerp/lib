@@ -938,7 +938,7 @@ function Library:CreateWindow(WindowName)
 		end
 		Window.Visible = State
 		if Window.Visible then
-			Window:SetupNavigationControls()
+			--Window:SetupNavigationControls()
 		else
 			table.foreach(
 				Window.Sections,
@@ -946,14 +946,14 @@ function Library:CreateWindow(WindowName)
 					HelperFunctions:SetLabelRangeVisibility(Section.Labels, false)
 				end
 			)
-			Window:DisableNavigationControls()
+			--Window:DisableNavigationControls()
 		end
 	end
 
 	function Window:SetupNavigationControls()
 		for InputClass, KeyCodes in next, Library.NavigationSettings do
 			local GUID = string.lower(HttpService:GenerateGUID(false))
-			ContextActionService:BindActionAtPriority(
+			ContextActionService:BindCoreActionAtPriority(
 				GUID,
 				function(...)
 					local _, UserInputState = ...
@@ -992,7 +992,7 @@ function Library:CreateWindow(WindowName)
 
 	function Window:DisableNavigationControls()
 		for _, Identifier in next, Window.Actions do
-			ContextActionService:UnbindAction(Identifier)
+			ContextActionService:UnbindCoreAction(Identifier)
 		end
 		table.clear(Window.Actions)
 	end
@@ -1002,6 +1002,42 @@ function Library:CreateWindow(WindowName)
 
 		if UserInputService:GetFocusedTextBox() == nil and find(Library.NavigationSettings.ToggleVisibility, KeyCode) ~= nil then
 			return Window:ToggleVisibility(not Window.Visible)
+		end
+
+		if KeyCode.UserInputState ~= Enum.UserInputState.Begin then
+			return
+		end
+
+		local InputClass
+
+		for _, KeyCodes in next, Library.NavigationSettings do
+			if find(KeyCodes, KeyCode) then
+				InputClass = _
+				break
+			end
+		end
+
+		if Window.Visible and InputClass then
+			return switch(InputClass) {
+				Activate = function()
+					return Window:Activate()
+				end;
+				CycleSection = function()
+					return Window:CycleSection()
+				end;
+				Down = function()
+					return Window:NavigateDown()
+				end;
+				Up = function()
+					return Window:NavigateUp()
+				end;
+				Left = function()
+					return Window:NavigateLeft()
+				end;
+				Right = function()
+					return Window:NavigateRight()
+				end;
+			}
 		end
 
 		if UserInputService:GetFocusedTextBox() then
@@ -1046,7 +1082,7 @@ function Library:CreateWindow(WindowName)
 
 	UserInputService.InputBegan:Connect(InputBegan)
 
-	Window:SetupNavigationControls()
+	--Window:SetupNavigationControls()
 
 	return Window
 end
